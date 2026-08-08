@@ -23,24 +23,30 @@ and — if there's anything to report — emails you a summary.
 2. Go to **Settings → API Keys** and create a new key.
 3. Copy it — you'll add it as a repo secret below. You'll also want billing set up on the account, since this makes real API calls each week.
 
-### 2. Generate a Gmail app password
+### 2. Get a Resend API key
 
-App passwords require 2-Step Verification to be enabled on the Google account first.
+1. Go to [resend.com](https://resend.com) and sign up (or sign in).
+2. Go to **API Keys** and create a new key with send access.
+3. Copy it — you'll add it as a repo secret below. Resend only shows the key once.
 
-1. Enable 2-Step Verification: [myaccount.google.com/security](https://myaccount.google.com/security).
-2. Go to [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords).
-3. Create an app password (name it something like "research-agent"). Google will show you a 16-character password — copy it. This is **not** your normal Gmail password, and Google only shows it once.
+Emails are sent from `onboarding@resend.dev`, Resend's shared sandbox
+address — it works with no domain verification, so there's nothing else to
+configure to get started. **Caveat:** without verifying your own domain in
+Resend, this sandbox sender can only deliver to the email address associated
+with your Resend account (Resend's anti-abuse restriction for unverified
+senders). If you want `RECIPIENT_EMAIL` to be a different address, verify a
+domain in Resend and change `RESEND_FROM_ADDRESS` in `agent.py` to an address
+on that domain.
 
 ### 3. Add repo secrets
 
-In this repo on GitHub: **Settings → Secrets and variables → Actions → New repository secret**. Add all four:
+In this repo on GitHub: **Settings → Secrets and variables → Actions → New repository secret**. Add all three:
 
 | Secret name | Value |
 |---|---|
 | `ANTHROPIC_API_KEY` | The key from step 1 |
-| `GMAIL_ADDRESS` | The Gmail address you generated the app password for |
-| `GMAIL_APP_PASSWORD` | The 16-character app password from step 2 |
-| `RECIPIENT_EMAIL` | Where you want the reports sent (can be the same Gmail address) |
+| `RESEND_API_KEY` | The key from step 2 |
+| `RECIPIENT_EMAIL` | Where you want the reports sent |
 
 ### 4. Trigger a manual test run before trusting the schedule
 
@@ -57,8 +63,8 @@ Don't wait for Saturday. Go to the **Actions** tab → **weekly-report** workflo
   primary artifact meant to be read, independent of email.
 
 If a run fails, check the Actions log first — most failures are a missing/typo'd
-secret or a Gmail app-password issue (Google occasionally requires
-re-generating the app password if 2FA settings change).
+secret, or the Resend sandbox-sender delivery restriction described in step 2
+above (check the Resend dashboard's **Logs** tab for the exact rejection reason).
 
 ## How it works
 

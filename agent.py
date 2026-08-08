@@ -13,15 +13,14 @@ import html
 import json
 import os
 import re
-import smtplib
-import ssl
 import sys
 from datetime import date
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from pathlib import Path
 
 import anthropic
+import resend
+
+RESEND_FROM_ADDRESS = "onboarding@resend.dev"
 
 MODEL = "claude-sonnet-5"
 MAX_NEW = 5
@@ -333,21 +332,18 @@ def write_report_file(report_dir: str, today: str, markdown_text: str) -> Path:
 
 
 def send_email(subject: str, html_body: str, plain_body: str) -> None:
-    gmail_address = os.environ["GMAIL_ADDRESS"]
-    gmail_app_password = os.environ["GMAIL_APP_PASSWORD"]
+    resend.api_key = os.environ["RESEND_API_KEY"]
     recipient = os.environ["RECIPIENT_EMAIL"]
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"] = gmail_address
-    msg["To"] = recipient
-    msg.attach(MIMEText(plain_body, "plain"))
-    msg.attach(MIMEText(html_body, "html"))
-
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-        server.login(gmail_address, gmail_app_password)
-        server.sendmail(gmail_address, recipient, msg.as_string())
+    resend.Emails.send(
+        {
+            "from": RESEND_FROM_ADDRESS,
+            "to": [recipient],
+            "subject": subject,
+            "html": html_body,
+            "text": plain_body,
+        }
+    )
 
 
 def run_track(client: anthropic.Anthropic, track_key: str, config: dict, today: str) -> None:
@@ -380,7 +376,7 @@ def run_track(client: anthropic.Anthropic, track_key: str, config: dict, today: 
 
 
 def main() -> None:
-    required_env = ["ANTHROPIC_API_KEY", "GMAIL_ADDRESS", "GMAIL_APP_PASSWORD", "RECIPIENT_EMAIL"]
+    required_env = ["ANTHROPIC_API_KEY", "RESEND_API_KEY", "RECIPIENT_EMAIL"]
     missing = [name for name in required_env if not os.environ.get(name)]
     if missing:
         print(f"Missing required environment variables: {', '.join(missing)}", file=sys.stderr)
