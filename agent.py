@@ -26,6 +26,14 @@ MODEL = "claude-sonnet-5"
 CONFIG_FILE = "config.json"
 DEFAULT_TRACK_CONFIG = {"max_new": 5, "max_updates": 8}
 
+# Claude Sonnet 5 pricing (per platform.claude.com/docs/en/about-claude/pricing,
+# checked 2026-08). Update these if pricing changes.
+PRICE_INPUT_PER_MTOK = 2.00
+PRICE_OUTPUT_PER_MTOK = 10.00
+PRICE_CACHE_READ_PER_MTOK = 0.20
+PRICE_CACHE_WRITE_5M_PER_MTOK = 2.50
+PRICE_PER_1000_SEARCHES = 10.00
+
 STATUS_ANCHORS = """STATUS DEFINITIONS (use these anchors consistently; do not invent your own scale):
 - emerging: first credible signal spotted; a single source or a small cluster; no measurable momentum yet.
 - developing: multiple independent sources now covering it within weeks of each other; early funding, a product launch, or a visible growth curve.
@@ -210,9 +218,18 @@ def extract_json(text: str) -> dict:
         return json.loads(text[start : end + 1])
 
 
-def run_research(client: anthropic.Anthropic, prompt: str) -> dict:
+def run_research(client: anthropic.Anthropic, prompt: str) -> tuple[dict, dict]:
     messages = [{"role": "user", "content": prompt}]
     tools = [{"type": "web_search_20260209", "name": "web_search", "max_uses": 15}]
+
+    usage = {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "web_search_requests": 0,
+        "api_calls": 0,
+    }
 
     while True:
         response = client.messages.create(
@@ -224,6 +241,16 @@ def run_research(client: anthropic.Anthropic, prompt: str) -> dict:
             messages=messages,
         )
 
+        usage["api_calls"] += 1
+        usage["input_tokens"] += response.usage.input_tokens
+        usage["output_tokens"] += response.usage.output_tokens
+        usage["cache_read_input_tokens"] += response.usage.cache_read_input_tokens or 0
+        usage["cache_creation_input_tokens"] += response.usage.cache_creation_input_tokens or 0
+        if response.usage.server_tool_use:
+            usage["web_search_requests"] += (
+                response.usage.server_tool_use.web_search_requests or 0
+            )
+
         if response.stop_reason == "pause_turn":
             messages.append({"role": "assistant", "content": response.content})
             continue
@@ -233,7 +260,17 @@ def run_research(client: anthropic.Anthropic, prompt: str) -> dict:
     final_text = "".join(
         block.text for block in response.content if block.type == "text"
     )
-    return extract_json(final_text)
+    return extract_json(final_text), usage
+
+
+def usage_cost_usd(usage: dict) -> float:
+    return (
+        usage["input_tokens"] * PRICE_INPUT_PER_MTOK / 1_000_000
+        + usage["output_tokens"] * PRICE_OUTPUT_PER_MTOK / 1_000_000
+        + usage["cache_read_input_tokens"] * PRICE_CACHE_READ_PER_MTOK / 1_000_000
+        + usage["cache_creation_input_tokens"] * PRICE_CACHE_WRITE_5M_PER_MTOK / 1_000_000
+        + usage["web_search_requests"] * PRICE_PER_1000_SEARCHES / 1000
+    )
 
 
 def merge_memory(memory: list, parsed: dict, today: str, max_new: int, max_updates: int):
@@ -369,7 +406,7 @@ def run_track(
     config: dict,
     tunables: dict,
     today: str,
-) -> None:
+) -> float:
     print(f"[{track_key}] loading memory from {config['memory_file']}")
     memory = load_memory(config["memory_file"])
 
@@ -378,7 +415,13 @@ def run_track(
 
     print(f"[{track_key}] researching via Claude + web_search...")
     prompt = build_prompt(config["prompt_template"], memory, today, max_new, max_updates)
-    parsed = run_research(client, prompt)
+    parsed, usage = run_research(client, prompt)
+    cost = usage_cost_usd(usage)
+    print(
+        f"[{track_key}] usage: {usage['api_calls']} API call(s), "
+        f"{usage['input_tokens']} input tok, {usage['output_tokens']} output tok, "
+        f"{usage['web_search_requests']} web search(es) -> ${cost:.4f}"
+    )
 
     merged_memory, report_new, report_updates = merge_memory(
         memory, parsed, today, max_new, max_updates
@@ -395,12 +438,13 @@ def run_track(
 
     if not report_new and not report_updates:
         print(f"[{track_key}] nothing to report — skipping email")
-        return
+        return cost
 
     html_body = render_html(config["label"], today, report_new, report_updates)
     subject = f"{config['email_subject']} — {today}"
     send_email(subject, html_body, markdown_text)
     print(f"[{track_key}] email sent")
+    return cost
 
 
 def main() -> None:
@@ -414,8 +458,11 @@ def main() -> None:
     today = date.today().isoformat()
     tunables = load_config()
 
+    total_cost = 0.0
     for track_key, config in TRACKS.items():
-        run_track(client, track_key, config, tunables[track_key], today)
+        total_cost += run_track(client, track_key, config, tunables[track_key], today)
+
+    print(f"[total] estimated Anthropic API cost this run: ${total_cost:.4f}")
 
 
 if __name__ == "__main__":
