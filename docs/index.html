@@ -12,11 +12,14 @@
     --muted: #666;
     --border: #ddd;
     --card: #f7f7f8;
+    --card2: #eef0f3;
     --accent: #2563eb;
     --accent-fg: #ffffff;
     --ok: #15803d;
     --warn: #b45309;
     --err: #b91c1c;
+    --bubble-user: #dbeafe;
+    --bubble-assistant: #f0f0f2;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -25,27 +28,58 @@
       --muted: #9a9a9a;
       --border: #333;
       --card: #1e2126;
+      --card2: #262a31;
       --accent: #4f8bff;
       --accent-fg: #0a0a0a;
       --ok: #4ade80;
       --warn: #fbbf24;
       --err: #f87171;
+      --bubble-user: #1e3a5f;
+      --bubble-assistant: #2a2d33;
     }
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    padding: 24px 16px 64px;
+    padding: 0 0 64px;
     background: var(--bg);
     color: var(--fg);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     line-height: 1.5;
   }
-  main { max-width: 900px; margin: 0 auto; }
+  main { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
   h1 { font-size: 22px; margin: 0 0 4px; }
   h2 { font-size: 17px; margin: 0 0 12px; }
-  .subtitle { color: var(--muted); font-size: 14px; margin: 0 0 28px; }
+  h3 { font-size: 15px; margin: 16px 0 6px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin: 0 0 20px; }
   .subtitle a { color: inherit; }
+
+  nav.tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+    padding: 0 16px;
+  }
+  nav.tabs .tabwrap { max-width: 960px; margin: 0 auto; display: flex; gap: 4px; width: 100%; }
+  nav.tabs button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 14px 14px 12px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+  }
+  nav.tabs button.active { color: var(--fg); border-bottom-color: var(--accent); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
   section {
     background: var(--card);
     border: 1px solid var(--border);
@@ -59,21 +93,18 @@
   .stat { min-width: 70px; }
   .stat .n { font-size: 22px; font-weight: 600; }
   .stat .l { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .02em; }
-  .status-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 14px; background: var(--border); }
+  .status-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 10px; background: var(--border); }
   .status-bar span { display: block; }
   .status-emerging { background: #94a3b8; }
   .status-developing { background: #60a5fa; }
   .status-maturing { background: #f59e0b; }
   .status-mainstream { background: #22c55e; }
-  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
   .legend .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
-  .reports { list-style: none; margin: 0; padding: 0; font-size: 14px; }
-  .reports li { margin-bottom: 6px; }
-  .reports a { color: var(--accent); text-decoration: none; }
-  .reports a:hover { text-decoration: underline; }
+
   .empty { color: var(--muted); font-size: 14px; font-style: italic; }
   label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
-  input[type=number], input[type=text], input[type=password], select {
+  input[type=number], input[type=text], input[type=password], select, textarea {
     width: 100%;
     padding: 7px 9px;
     border: 1px solid var(--border);
@@ -82,10 +113,11 @@
     color: var(--fg);
     font-size: 14px;
     margin-bottom: 12px;
+    font-family: inherit;
   }
+  textarea { resize: vertical; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 14px; }
-  @media (max-width: 560px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
   fieldset { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px 2px; margin: 0 0 16px; }
   legend { font-size: 13px; font-weight: 600; padding: 0 6px; }
   button {
@@ -98,12 +130,8 @@
     font-weight: 600;
     cursor: pointer;
   }
-  button.secondary {
-    background: transparent;
-    color: var(--fg);
-    border: 1px solid var(--border);
-    font-weight: 500;
-  }
+  button.secondary { background: transparent; color: var(--fg); border: 1px solid var(--border); font-weight: 500; }
+  button.small { padding: 5px 10px; font-size: 12px; }
   button:disabled { opacity: .5; cursor: default; }
   .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .msg { font-size: 13px; margin-top: 10px; min-height: 1.2em; }
@@ -111,108 +139,276 @@
   .msg.warn { color: var(--warn); }
   .msg.err { color: var(--err); }
   .hint { font-size: 12px; color: var(--muted); margin-top: -6px; margin-bottom: 14px; }
-  .token-status { font-size: 13px; }
-  .token-status .connected { color: var(--ok); }
-  .token-status .disconnected { color: var(--muted); }
   footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 30px; }
-  a.repo-link { color: var(--accent); }
+
+  .topic-list { max-height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 12px; background: var(--bg); }
+  .topic-list label { display: flex; align-items: flex-start; gap: 6px; font-size: 13px; color: var(--fg); margin-bottom: 6px; font-weight: normal; }
+  .topic-list input[type=checkbox] { margin: 0; width: auto; }
+
+  .steps { list-style: none; margin: 12px 0 0; padding: 0; font-size: 13px; }
+  .steps li { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+  .step-icon { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+  .step-queued { background: var(--border); }
+  .step-in_progress { background: var(--warn); animation: pulse 1.2s infinite; }
+  .step-completed-success { background: var(--ok); }
+  .step-completed-failure { background: var(--err); }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+
+  .report-list { list-style: none; margin: 0; padding: 0; font-size: 14px; }
+  .report-list li { margin-bottom: 4px; }
+  .report-list button.link {
+    background: none; border: none; color: var(--accent); padding: 2px 0;
+    font-size: 14px; text-decoration: none; cursor: pointer; font-weight: 500;
+  }
+  .report-list button.link:hover { text-decoration: underline; }
+
+  .report-view { border-top: 1px solid var(--border); margin-top: 14px; padding-top: 14px; }
+  .report-view h2 { font-size: 18px; }
+  .report-view h3 { font-size: 15px; margin-top: 18px; }
+  .report-view h4 { font-size: 14px; margin: 14px 0 4px; }
+  .report-view ul { padding-left: 20px; }
+
+  .chat-box { border: 1px solid var(--border); border-radius: 8px; padding: 12px; background: var(--bg); max-height: 420px; overflow-y: auto; margin-bottom: 10px; }
+  .bubble { max-width: 85%; padding: 8px 12px; border-radius: 10px; margin-bottom: 8px; font-size: 13px; white-space: pre-wrap; }
+  .bubble.user { background: var(--bubble-user); margin-left: auto; }
+  .bubble.assistant { background: var(--bubble-assistant); margin-right: auto; }
+  .bubble pre { background: rgba(127,127,127,.15); padding: 8px; border-radius: 6px; overflow-x: auto; font-size: 12px; }
+  .chat-input-row { display: flex; gap: 8px; }
+  .chat-input-row textarea { margin-bottom: 0; flex: 1; }
+
+  .cost-bars { display: flex; align-items: flex-end; gap: 3px; height: 90px; margin: 12px 0; overflow-x: auto; padding-bottom: 2px; }
+  .cost-bars .bar { width: 10px; background: var(--accent); border-radius: 2px 2px 0 0; flex-shrink: 0; min-height: 2px; }
+  table.usage-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.usage-table th, table.usage-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  table.usage-table th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+
+  .prompt-editor { min-height: 220px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
 </style>
 </head>
 <body>
+
+<nav class="tabs">
+  <div class="tabwrap">
+    <button class="tab-btn active" data-tab="home">Home</button>
+    <button class="tab-btn" data-tab="history">History</button>
+    <button class="tab-btn" data-tab="usage">Usage / Cost</button>
+    <button class="tab-btn" data-tab="settings">Settings</button>
+  </div>
+</nav>
+
 <main>
 
   <h1>Research Agent Dashboard</h1>
   <p class="subtitle">
-    Frontier + Trends weekly tracker &middot;
-    <a class="repo-link" href="https://github.com/rharoo20/research-agent" target="_blank" rel="noopener">rharoo20/research-agent</a>
+    Frontier + Trends, on-demand &middot;
+    <a href="https://github.com/rharoo20/research-agent" target="_blank" rel="noopener">rharoo20/research-agent</a>
   </p>
 
-  <section class="tracks" id="tracks">
-    <div id="track-frontier"><h2>Frontier</h2><p class="empty">Loading&hellip;</p></div>
-    <div id="track-trends"><h2>Trends</h2><p class="empty">Loading&hellip;</p></div>
-  </section>
+  <!-- ============================= HOME ============================= -->
+  <div class="tab-panel active" id="tab-home">
 
-  <section>
-    <h2>Settings</h2>
-    <p class="hint">
-      Changes here commit directly to the repo. Item caps take effect on the next run.
-      Delivery time takes effect on the next scheduled trigger after the commit lands
-      (GitHub Actions can take a few minutes to notice a workflow file change).
-    </p>
+    <section class="tracks" id="status-tracks">
+      <div id="status-frontier"><h2>Frontier</h2><p class="empty">Loading&hellip;</p></div>
+      <div id="status-trends"><h2>Trends</h2><p class="empty">Loading&hellip;</p></div>
+    </section>
 
-    <form id="settings-form">
+    <section>
+      <h2>Run</h2>
+      <p class="hint">
+        Uncheck a topic to skip researching updates for it this run (it stays
+        tracked — this only affects this one run). Add optional extra focus
+        text to steer this run without editing the base prompt.
+      </p>
+
       <div class="grid2">
         <fieldset>
-          <legend>Frontier caps</legend>
-          <label for="frontier-max-new">Max new items / week</label>
-          <input type="number" id="frontier-max-new" min="1" max="50" required>
-          <label for="frontier-max-updates">Max updates / week</label>
-          <input type="number" id="frontier-max-updates" min="1" max="50" required>
+          <legend><label style="display:inline;margin:0"><input type="checkbox" id="run-frontier" checked style="width:auto;margin-right:6px"> Run Frontier</label></legend>
+          <div class="topic-list" id="frontier-topic-list"><p class="empty">Loading topics&hellip;</p></div>
+          <label for="frontier-extra-focus">Additional focus for this run (optional)</label>
+          <textarea id="frontier-extra-focus" rows="2" placeholder="e.g. also check on fusion energy startups"></textarea>
         </fieldset>
         <fieldset>
-          <legend>Trends caps</legend>
-          <label for="trends-max-new">Max new items / week</label>
-          <input type="number" id="trends-max-new" min="1" max="50" required>
-          <label for="trends-max-updates">Max updates / week</label>
-          <input type="number" id="trends-max-updates" min="1" max="50" required>
+          <legend><label style="display:inline;margin:0"><input type="checkbox" id="run-trends" checked style="width:auto;margin-right:6px"> Run Trends</label></legend>
+          <div class="topic-list" id="trends-topic-list"><p class="empty">Loading topics&hellip;</p></div>
+          <label for="trends-extra-focus">Additional focus for this run (optional)</label>
+          <textarea id="trends-extra-focus" rows="2" placeholder="e.g. also check on fermented food products"></textarea>
         </fieldset>
       </div>
 
-      <fieldset>
-        <legend>Delivery schedule</legend>
-        <div class="grid2">
-          <div>
-            <label for="delivery-day">Day of week</label>
-            <select id="delivery-day">
-              <option value="0">Sunday</option>
-              <option value="1">Monday</option>
-              <option value="2">Tuesday</option>
-              <option value="3">Wednesday</option>
-              <option value="4">Thursday</option>
-              <option value="5">Friday</option>
-              <option value="6">Saturday</option>
-            </select>
-          </div>
-          <div>
-            <label for="delivery-time">Time (America/Chicago)</label>
-            <input type="text" id="delivery-time" placeholder="09:00" pattern="[0-2][0-9]:[0-5][0-9]">
-          </div>
-        </div>
-        <p class="hint">
-          24-hour local Chicago time, e.g. <code>09:00</code> or <code>18:30</code>. Assumes
-          Central Daylight Time (UTC&minus;5, roughly mid-March&ndash;early November). During
-          Central Standard Time (UTC&minus;6, roughly early-November&ndash;mid-March) actual
-          delivery will run about an hour later than what you set here &mdash; a known
-          limitation of GitHub Actions' UTC-only, non-DST-aware cron.
-        </p>
-        <p class="hint" id="current-cron"></p>
-      </fieldset>
-
       <div class="row">
-        <button type="submit" id="save-btn">Save changes</button>
-        <span class="msg" id="save-msg"></span>
+        <button id="run-btn">Run</button>
+        <span class="msg" id="run-msg"></span>
       </div>
-    </form>
-  </section>
 
-  <section>
-    <h2>GitHub access</h2>
-    <p class="hint">
-      Saving changes requires a token so this page can commit to your repo on your behalf.
-      The token is stored <strong>only in this browser's local storage</strong> &mdash; it is
-      never sent anywhere except directly to api.github.com, and never appears in this page's
-      source. Create a
-      <a class="repo-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained personal access token</a>
-      scoped to <strong>only this repository</strong>, with Repository permissions &rarr;
-      <strong>Contents: Read and write</strong> (nothing else needed).
-    </p>
-    <div class="row">
-      <input type="password" id="token-input" placeholder="github_pat_..." style="flex:1; min-width:220px; margin-bottom:0;">
-      <button type="button" id="token-save" class="secondary">Save token</button>
-      <button type="button" id="token-clear" class="secondary">Clear</button>
-    </div>
-    <p class="token-status" id="token-status"></p>
-  </section>
+      <div id="run-progress"></div>
+    </section>
+  </div>
+
+  <!-- ============================ HISTORY ============================ -->
+  <div class="tab-panel" id="tab-history">
+    <section class="tracks">
+      <div>
+        <h2>Frontier reports</h2>
+        <ul class="report-list" id="history-frontier"><li class="empty">Loading&hellip;</li></ul>
+      </div>
+      <div>
+        <h2>Trends reports</h2>
+        <ul class="report-list" id="history-trends"><li class="empty">Loading&hellip;</li></ul>
+      </div>
+    </section>
+
+    <section id="report-view-section" style="display:none">
+      <div class="report-view" id="report-view"></div>
+
+      <div style="margin-top:20px">
+        <h3>Ask Claude about this report</h3>
+        <p class="hint" id="chat-key-hint"></p>
+        <div class="row" style="margin-bottom:10px">
+          <label for="chat-model" style="margin:0">Model</label>
+          <select id="chat-model" style="width:auto;margin:0">
+            <option value="claude-haiku-4-5" selected>Haiku 4.5 (cheap, default)</option>
+            <option value="claude-sonnet-5">Sonnet 5 (stronger, pricier)</option>
+          </select>
+        </div>
+        <div class="chat-box" id="chat-box"></div>
+        <div class="chat-input-row">
+          <textarea id="chat-input" rows="2" placeholder="Ask a question, or ask Claude to rewrite part of the report..."></textarea>
+          <button id="chat-send">Send</button>
+        </div>
+        <p class="msg" id="chat-msg"></p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================= USAGE ============================= -->
+  <div class="tab-panel" id="tab-usage">
+    <section>
+      <h2>Spend</h2>
+      <div class="stat-row">
+        <div class="stat"><div class="n" id="usage-total">&mdash;</div><div class="l">total spent</div></div>
+        <div class="stat"><div class="n" id="usage-count">&mdash;</div><div class="l">runs logged</div></div>
+        <div class="stat"><div class="n" id="usage-avg">&mdash;</div><div class="l">avg / run</div></div>
+      </div>
+      <div class="cost-bars" id="cost-bars"></div>
+      <p class="hint">Each bar is one track's run, oldest to newest, height scaled to its cost.</p>
+    </section>
+
+    <section>
+      <h2>Run log</h2>
+      <div style="overflow-x:auto">
+        <table class="usage-table" id="usage-table">
+          <thead><tr><th>Date</th><th>Track</th><th>Input tok</th><th>Cached</th><th>Output tok</th><th>Searches</th><th>Cost</th></tr></thead>
+          <tbody><tr><td colspan="7" class="empty">Loading&hellip;</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================ SETTINGS ============================ -->
+  <div class="tab-panel" id="tab-settings">
+    <section>
+      <h2>Anthropic API key</h2>
+      <p class="hint">
+        Used only for the chat feature in History, calling
+        <code>api.anthropic.com</code> directly from this page (Anthropic's
+        supported "direct browser access" mode). Stored only in this
+        browser's local storage — never sent anywhere else, never committed
+        to the repo. This is a real credential in your browser's storage;
+        anyone with access to this browser profile could read it.
+      </p>
+      <div class="row">
+        <input type="password" id="anthropic-key-input" placeholder="sk-ant-..." style="flex:1; min-width:220px; margin-bottom:0;">
+        <button type="button" id="anthropic-key-save" class="secondary">Save</button>
+        <button type="button" id="anthropic-key-clear" class="secondary">Clear</button>
+      </div>
+      <p class="msg" id="anthropic-key-status"></p>
+    </section>
+
+    <section>
+      <h2>GitHub access</h2>
+      <p class="hint">
+        Used to trigger runs, read run progress, and save settings/prompt/report
+        changes below. Stored only in this browser's local storage. Create a
+        <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained personal access token</a>
+        scoped to <strong>only this repository</strong>, with Repository
+        permissions &rarr; <strong>Contents: Read and write</strong> and
+        <strong>Actions: Read and write</strong> (Actions is needed to trigger
+        and poll runs from the Home tab; Contents is needed to save changes
+        below).
+      </p>
+      <div class="row">
+        <input type="password" id="token-input" placeholder="github_pat_..." style="flex:1; min-width:220px; margin-bottom:0;">
+        <button type="button" id="token-save" class="secondary">Save token</button>
+        <button type="button" id="token-clear" class="secondary">Clear</button>
+      </div>
+      <p class="msg" id="token-status"></p>
+    </section>
+
+    <section>
+      <h2>Per-track settings</h2>
+      <form id="settings-form">
+        <div class="grid2">
+          <fieldset>
+            <legend>Frontier</legend>
+            <label for="frontier-max-new">Max new items / run</label>
+            <input type="number" id="frontier-max-new" min="1" max="50" required>
+            <label for="frontier-max-updates">Max updates / run</label>
+            <input type="number" id="frontier-max-updates" min="1" max="50" required>
+            <label for="frontier-effort">Effort</label>
+            <select id="frontier-effort">
+              <option value="low">Low (cheapest)</option>
+              <option value="medium">Medium (recommended)</option>
+              <option value="high">High (most thorough, priciest)</option>
+            </select>
+            <label for="frontier-max-searches">Max web searches / run</label>
+            <input type="number" id="frontier-max-searches" min="1" max="30" required>
+          </fieldset>
+          <fieldset>
+            <legend>Trends</legend>
+            <label for="trends-max-new">Max new items / run</label>
+            <input type="number" id="trends-max-new" min="1" max="50" required>
+            <label for="trends-max-updates">Max updates / run</label>
+            <input type="number" id="trends-max-updates" min="1" max="50" required>
+            <label for="trends-effort">Effort</label>
+            <select id="trends-effort">
+              <option value="low">Low (cheapest)</option>
+              <option value="medium">Medium (recommended)</option>
+              <option value="high">High (most thorough, priciest)</option>
+            </select>
+            <label for="trends-max-searches">Max web searches / run</label>
+            <input type="number" id="trends-max-searches" min="1" max="30" required>
+          </fieldset>
+        </div>
+        <div class="row">
+          <button type="submit" id="save-settings-btn">Save settings</button>
+          <span class="msg" id="save-settings-msg"></span>
+        </div>
+      </form>
+    </section>
+
+    <section>
+      <h2>Prompts</h2>
+      <p class="hint">
+        The research brief each track uses. Keep the <code>&lt;&lt;...&gt;&gt;</code>
+        placeholders intact — they're substituted at run time. If
+        <code>&lt;&lt;OUTPUT_SCHEMA&gt;&gt;</code> is accidentally removed the
+        code still appends it automatically as a safety net, but the other
+        placeholders (memory, caps, focus text) will just stop working if removed.
+      </p>
+      <label for="frontier-prompt">Frontier prompt</label>
+      <textarea id="frontier-prompt" class="prompt-editor"></textarea>
+      <div class="row" style="margin-bottom:16px">
+        <button type="button" id="save-frontier-prompt" class="secondary">Save Frontier prompt</button>
+        <span class="msg" id="frontier-prompt-msg"></span>
+      </div>
+      <label for="trends-prompt">Trends prompt</label>
+      <textarea id="trends-prompt" class="prompt-editor"></textarea>
+      <div class="row">
+        <button type="button" id="save-trends-prompt" class="secondary">Save Trends prompt</button>
+        <span class="msg" id="trends-prompt-msg"></span>
+      </div>
+    </section>
+  </div>
 
   <footer id="footer">Loading&hellip;</footer>
 
@@ -224,15 +420,37 @@ const REPO = "research-agent";
 const BRANCH = "main";
 const RAW_BASE = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}`;
 const API_BASE = `https://api.github.com/repos/${OWNER}/${REPO}`;
-const WORKFLOW_PATH = ".github/workflows/weekly-report.yml";
+const WORKFLOW_FILE = "run-agent.yml";
 const CONFIG_PATH = "config.json";
+const USAGE_LOG_PATH = "usage_log.jsonl";
 const STATUS_ORDER = ["emerging", "developing", "maturing", "mainstream"];
-const TOKEN_KEY = "research_agent_gh_pat";
+const GH_TOKEN_KEY = "research_agent_gh_pat";
+const ANTHROPIC_KEY_KEY = "research_agent_anthropic_key";
+const TRACKS = { frontier: "Frontier", trends: "Trends" };
 
 const $ = (id) => document.getElementById(id);
+const escapeHtml = (s) =>
+  (s || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+// ---------------------------------------------------------------- tabs ----
+document.querySelectorAll(".tab-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
+    btn.classList.add("active");
+    $(`tab-${btn.dataset.tab}`).classList.add("active");
+    location.hash = btn.dataset.tab;
+  });
+});
+function openTabFromHash() {
+  const tab = location.hash.replace("#", "") || "home";
+  const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+  if (btn) btn.click();
+}
+
+// ------------------------------------------------------- GitHub helpers ----
 function ghHeaders(extra) {
-  const token = localStorage.getItem(TOKEN_KEY);
+  const token = localStorage.getItem(GH_TOKEN_KEY);
   const headers = {
     "Accept": "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
@@ -248,177 +466,11 @@ async function fetchJson(url) {
   return res.json();
 }
 
-function countsByStatus(memory) {
-  const counts = Object.fromEntries(STATUS_ORDER.map((s) => [s, 0]));
-  for (const e of memory) {
-    if (counts[e.status] !== undefined) counts[e.status]++;
-  }
-  return counts;
+async function fetchText(url) {
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
+  return res.text();
 }
-
-function renderStatusBar(counts, total) {
-  if (total === 0) return "";
-  const segments = STATUS_ORDER
-    .filter((s) => counts[s] > 0)
-    .map((s) => `<span class="status-${s}" style="width:${(counts[s] / total) * 100}%"></span>`)
-    .join("");
-  return `<div class="status-bar">${segments}</div>`;
-}
-
-function renderLegend(counts) {
-  return `<div class="legend">${STATUS_ORDER.map(
-    (s) => `<span><span class="dot status-${s}"></span>${s} (${counts[s]})</span>`
-  ).join("")}</div>`;
-}
-
-async function listReports(trackKey) {
-  try {
-    const items = await fetchJson(`${API_BASE}/contents/reports/${trackKey}?ref=${BRANCH}`);
-    return items
-      .filter((f) => f.name.endsWith(".md"))
-      .sort((a, b) => b.name.localeCompare(a.name));
-  } catch {
-    return [];
-  }
-}
-
-function reportBlobUrl(trackKey, filename) {
-  return `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/reports/${trackKey}/${filename}`;
-}
-
-async function renderTrack(trackKey, label) {
-  const el = $(`track-${trackKey}`);
-  try {
-    const [memory, reports] = await Promise.all([
-      fetchJson(`${RAW_BASE}/${trackKey}_memory.json`).catch(() => []),
-      listReports(trackKey),
-    ]);
-
-    const counts = countsByStatus(memory);
-    const total = memory.length;
-    const lastReport = reports[0];
-    const lastReportDate = lastReport ? lastReport.name.replace(".md", "") : null;
-
-    const reportList = reports.length
-      ? `<ul class="reports">${reports
-          .slice(0, 8)
-          .map(
-            (f) =>
-              `<li><a href="${reportBlobUrl(trackKey, f.name)}" target="_blank" rel="noopener">${f.name.replace(".md", "")}</a></li>`
-          )
-          .join("")}</ul>`
-      : `<p class="empty">No reports yet.</p>`;
-
-    el.innerHTML = `
-      <h2>${label}</h2>
-      <div class="stat-row">
-        <div class="stat"><div class="n">${total}</div><div class="l">tracked</div></div>
-        <div class="stat"><div class="n">${lastReportDate || "&mdash;"}</div><div class="l">last report</div></div>
-      </div>
-      ${total > 0 ? renderStatusBar(counts, total) + renderLegend(counts) : `<p class="empty">Nothing tracked yet.</p>`}
-      ${reportList}
-    `;
-  } catch (err) {
-    el.innerHTML = `<h2>${label}</h2><p class="empty">Couldn't load (${err.message}).</p>`;
-  }
-}
-
-async function loadConfigIntoForm() {
-  let cfg;
-  try {
-    cfg = await fetchJson(`${RAW_BASE}/${CONFIG_PATH}`);
-  } catch {
-    cfg = {};
-  }
-  const defaults = { max_new: 5, max_updates: 8 };
-  const frontier = { ...defaults, ...(cfg.frontier || {}) };
-  const trends = { ...defaults, ...(cfg.trends || {}) };
-  $("frontier-max-new").value = frontier.max_new;
-  $("frontier-max-updates").value = frontier.max_updates;
-  $("trends-max-new").value = trends.max_new;
-  $("trends-max-updates").value = trends.max_updates;
-}
-
-function parseCronFromWorkflow(yamlText) {
-  const m = yamlText.match(/cron:\s*"([^"]+)"/);
-  return m ? m[1] : null;
-}
-
-function cronToDayTime(cron) {
-  // Expected shape: "MIN HOUR * * DOW" in UTC, assumed to encode a CDT (UTC-5) local time.
-  const parts = cron.trim().split(/\s+/);
-  if (parts.length !== 5) return null;
-  const [minStr, hourStr, , , dowStr] = parts;
-  let hourUtc = parseInt(hourStr, 10);
-  let dow = parseInt(dowStr, 10);
-  if (Number.isNaN(hourUtc) || Number.isNaN(dow)) return null;
-  let hourLocal = hourUtc - 5; // undo the CDT offset baked into the stored cron
-  if (hourLocal < 0) {
-    hourLocal += 24;
-    dow = (dow + 6) % 7; // one day earlier
-  }
-  const minute = minStr.padStart(2, "0");
-  return { day: dow, time: `${String(hourLocal).padStart(2, "0")}:${minute}` };
-}
-
-function dayTimeToCron(day, time) {
-  const [hStr, mStr] = time.split(":");
-  let hourLocal = parseInt(hStr, 10);
-  const minute = parseInt(mStr, 10);
-  let hourUtc = hourLocal + 5; // apply CDT (UTC-5) offset, same convention as the current workflow
-  let dow = day;
-  if (hourUtc >= 24) {
-    hourUtc -= 24;
-    dow = (dow + 1) % 7;
-  }
-  return `${minute} ${hourUtc} * * ${dow}`;
-}
-
-let currentCron = null;
-
-async function loadScheduleIntoForm() {
-  try {
-    const res = await fetch(`${RAW_BASE}/${WORKFLOW_PATH}`, { cache: "no-store" });
-    const text = await res.text();
-    currentCron = parseCronFromWorkflow(text);
-    const dt = currentCron ? cronToDayTime(currentCron) : null;
-    if (dt) {
-      $("delivery-day").value = String(dt.day);
-      $("delivery-time").value = dt.time;
-    }
-    $("current-cron").textContent = currentCron
-      ? `Current cron (UTC): ${currentCron}`
-      : "Couldn't read the current schedule.";
-  } catch {
-    $("current-cron").textContent = "Couldn't read the current schedule.";
-  }
-}
-
-function setMsg(text, kind) {
-  const el = $("save-msg");
-  el.textContent = text;
-  el.className = `msg ${kind || ""}`;
-}
-
-function updateTokenStatus() {
-  const has = !!localStorage.getItem(TOKEN_KEY);
-  $("token-status").innerHTML = has
-    ? `<span class="connected">&#9679; Token saved in this browser.</span>`
-    : `<span class="disconnected">&#9675; No token saved &mdash; saving changes will fail until you add one.</span>`;
-}
-
-$("token-save").addEventListener("click", () => {
-  const val = $("token-input").value.trim();
-  if (!val) return;
-  localStorage.setItem(TOKEN_KEY, val);
-  $("token-input").value = "";
-  updateTokenStatus();
-});
-
-$("token-clear").addEventListener("click", () => {
-  localStorage.removeItem(TOKEN_KEY);
-  updateTokenStatus();
-});
 
 async function getFileSha(path) {
   const res = await fetch(`${API_BASE}/contents/${path}?ref=${BRANCH}`, { headers: ghHeaders() });
@@ -444,71 +496,612 @@ async function putFile(path, newText, sha, message) {
   }
 }
 
-$("settings-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const token = localStorage.getItem(TOKEN_KEY);
+function countsByStatus(memory) {
+  const counts = Object.fromEntries(STATUS_ORDER.map((s) => [s, 0]));
+  for (const e of memory) if (counts[e.status] !== undefined) counts[e.status]++;
+  return counts;
+}
+function renderStatusBar(counts, total) {
+  if (total === 0) return "";
+  return `<div class="status-bar">${STATUS_ORDER.filter((s) => counts[s] > 0)
+    .map((s) => `<span class="status-${s}" style="width:${(counts[s] / total) * 100}%"></span>`)
+    .join("")}</div>`;
+}
+function renderLegend(counts) {
+  return `<div class="legend">${STATUS_ORDER.map((s) => `<span><span class="dot status-${s}"></span>${s} (${counts[s]})</span>`).join("")}</div>`;
+}
+
+async function loadMemory(trackKey) {
+  try {
+    return await fetchJson(`${RAW_BASE}/${trackKey}_memory.json`);
+  } catch {
+    return [];
+  }
+}
+
+async function listReports(trackKey) {
+  try {
+    const items = await fetchJson(`${API_BASE}/contents/reports/${trackKey}?ref=${BRANCH}`);
+    return items.filter((f) => f.name.endsWith(".md")).sort((a, b) => b.name.localeCompare(a.name));
+  } catch {
+    return [];
+  }
+}
+
+// ============================================================== HOME =====
+
+async function renderStatusSummary(trackKey, label) {
+  const el = $(`status-${trackKey}`);
+  const [memory, reports] = await Promise.all([loadMemory(trackKey), listReports(trackKey)]);
+  const counts = countsByStatus(memory);
+  const total = memory.length;
+  const lastReport = reports[0] ? reports[0].name.replace(".md", "") : "&mdash;";
+  el.innerHTML = `
+    <h2>${label}</h2>
+    <div class="stat-row">
+      <div class="stat"><div class="n">${total}</div><div class="l">tracked</div></div>
+      <div class="stat"><div class="n">${lastReport}</div><div class="l">last report</div></div>
+    </div>
+    ${total > 0 ? renderStatusBar(counts, total) + renderLegend(counts) : `<p class="empty">Nothing tracked yet.</p>`}
+  `;
+  return memory;
+}
+
+function renderTopicChecklist(trackKey, memory) {
+  const el = $(`${trackKey}-topic-list`);
+  if (!memory.length) {
+    el.innerHTML = `<p class="empty">No tracked topics yet — this run will only surface new findings.</p>`;
+    return;
+  }
+  el.innerHTML = memory
+    .map(
+      (e) =>
+        `<label><input type="checkbox" checked data-id="${escapeHtml(e.id)}"> ${escapeHtml(e.topic)} <span style="color:var(--muted)">(${escapeHtml(e.status)})</span></label>`
+    )
+    .join("");
+}
+
+function getExcludedIds(trackKey) {
+  const el = $(`${trackKey}-topic-list`);
+  return [...el.querySelectorAll('input[type="checkbox"]')]
+    .filter((cb) => !cb.checked)
+    .map((cb) => cb.dataset.id);
+}
+
+async function dispatchRun() {
+  const runFrontier = $("run-frontier").checked;
+  const runTrends = $("run-trends").checked;
+  const runMsg = $("run-msg");
+
+  if (!runFrontier && !runTrends) {
+    runMsg.className = "msg err";
+    runMsg.textContent = "Select at least one track to run.";
+    return;
+  }
+  const token = localStorage.getItem(GH_TOKEN_KEY);
   if (!token) {
-    setMsg("Add a GitHub token below first.", "err");
+    runMsg.className = "msg err";
+    runMsg.textContent = "Add a GitHub token in Settings first.";
     return;
   }
 
-  const saveBtn = $("save-btn");
-  saveBtn.disabled = true;
-  setMsg("Saving…", "warn");
+  const tracks = runFrontier && runTrends ? "both" : runFrontier ? "frontier" : "trends";
+  const inputs = {
+    tracks,
+    frontier_exclude_ids: getExcludedIds("frontier").join(","),
+    frontier_extra_focus: $("frontier-extra-focus").value.trim(),
+    trends_exclude_ids: getExcludedIds("trends").join(","),
+    trends_extra_focus: $("trends-extra-focus").value.trim(),
+  };
+
+  const runBtn = $("run-btn");
+  runBtn.disabled = true;
+  runMsg.className = "msg warn";
+  runMsg.textContent = "Finding current run state...";
 
   try {
-    const newConfig = {
-      frontier: {
-        max_new: parseInt($("frontier-max-new").value, 10),
-        max_updates: parseInt($("frontier-max-updates").value, 10),
-      },
-      trends: {
-        max_new: parseInt($("trends-max-new").value, 10),
-        max_updates: parseInt($("trends-max-updates").value, 10),
-      },
-    };
-    const newConfigText = JSON.stringify(newConfig, null, 2) + "\n";
+    const before = await fetchJsonAuth(
+      `${API_BASE}/actions/workflows/${WORKFLOW_FILE}/runs?per_page=1`
+    ).catch(() => ({ workflow_runs: [] }));
+    const previousTopId = before.workflow_runs?.[0]?.id ?? null;
 
-    const { sha: configSha, contentText: configOld } = await getFileSha(CONFIG_PATH);
-    let wrote = [];
-    if (configOld.trim() !== newConfigText.trim()) {
-      await putFile(CONFIG_PATH, newConfigText, configSha, "Update item caps via dashboard");
-      wrote.push("caps");
-    }
-
-    const day = parseInt($("delivery-day").value, 10);
-    const time = $("delivery-time").value.trim();
-    if (/^\d{1,2}:\d{2}$/.test(time)) {
-      const newCron = dayTimeToCron(day, time);
-      if (newCron !== currentCron) {
-        const { sha: wfSha, contentText: wfOld } = await getFileSha(WORKFLOW_PATH);
-        const newWfText = wfOld.replace(/cron:\s*"([^"]+)"/, `cron: "${newCron}"`);
-        await putFile(WORKFLOW_PATH, newWfText, wfSha, "Update delivery schedule via dashboard");
-        currentCron = newCron;
-        $("current-cron").textContent = `Current cron (UTC): ${newCron}`;
-        wrote.push("schedule");
+    runMsg.textContent = "Dispatching...";
+    const dispatchRes = await fetch(
+      `${API_BASE}/actions/workflows/${WORKFLOW_FILE}/dispatches`,
+      {
+        method: "POST",
+        headers: ghHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({ ref: BRANCH, inputs }),
       }
+    );
+    if (!dispatchRes.ok) {
+      const body = await dispatchRes.text();
+      throw new Error(`HTTP ${dispatchRes.status}: ${body.slice(0, 300)}`);
     }
 
-    setMsg(
-      wrote.length ? `Saved (${wrote.join(", ")} updated).` : "No changes to save.",
-      "ok"
-    );
+    runMsg.textContent = "Waiting for the run to appear...";
+    let runId = null;
+    for (let i = 0; i < 20 && !runId; i++) {
+      await new Promise((r) => setTimeout(r, 2000));
+      const check = await fetchJsonAuth(
+        `${API_BASE}/actions/workflows/${WORKFLOW_FILE}/runs?per_page=1`
+      ).catch(() => ({ workflow_runs: [] }));
+      const topRun = check.workflow_runs?.[0];
+      if (topRun && topRun.id !== previousTopId) runId = topRun.id;
+    }
+
+    if (!runId) {
+      runMsg.className = "msg warn";
+      runMsg.innerHTML = `Dispatched, but couldn't locate the run automatically. Check the <a href="https://github.com/${OWNER}/${REPO}/actions" target="_blank" rel="noopener">Actions tab</a> directly.`;
+      return;
+    }
+
+    runMsg.className = "msg ok";
+    runMsg.textContent = "Run started.";
+    pollRun(runId);
   } catch (err) {
-    setMsg(`Save failed: ${err.message}`, "err");
+    runMsg.className = "msg err";
+    runMsg.textContent = `Failed: ${err.message}`;
   } finally {
-    saveBtn.disabled = false;
+    runBtn.disabled = false;
+  }
+}
+
+const STEP_ICON = {
+  queued: "step-queued",
+  in_progress: "step-in_progress",
+};
+
+async function pollRun(runId) {
+  const progressEl = $("run-progress");
+  const runUrl = `https://github.com/${OWNER}/${REPO}/actions/runs/${runId}`;
+
+  for (let i = 0; i < 150; i++) {
+    let run, jobs;
+    try {
+      [run, jobs] = await Promise.all([
+        fetchJsonAuth(`${API_BASE}/actions/runs/${runId}`),
+        fetchJsonAuth(`${API_BASE}/actions/runs/${runId}/jobs`),
+      ]);
+    } catch {
+      // transient failure (rate limit, blip) — retry rather than aborting the poll loop
+      await new Promise((r) => setTimeout(r, 3000));
+      continue;
+    }
+
+    const steps = (jobs.jobs?.[0]?.steps || []);
+    progressEl.innerHTML = `
+      <ul class="steps">
+        ${steps
+          .map((s) => {
+            const cls =
+              s.status === "completed"
+                ? `step-completed-${s.conclusion === "success" ? "success" : "failure"}`
+                : STEP_ICON[s.status] || "step-queued";
+            return `<li><span class="step-icon ${cls}"></span>${escapeHtml(s.name)} <span style="color:var(--muted)">(${s.status}${s.conclusion ? ", " + s.conclusion : ""})</span></li>`;
+          })
+          .join("")}
+      </ul>
+      <p class="hint" style="margin-top:8px">
+        <a href="${runUrl}" target="_blank" rel="noopener">Full log on GitHub</a>
+      </p>
+    `;
+
+    if (run.status === "completed") {
+      const ok = run.conclusion === "success";
+      progressEl.innerHTML += `<p class="msg ${ok ? "ok" : "err"}">Run ${run.conclusion}.</p>`;
+      if (ok) {
+        renderStatusSummary("frontier", "Frontier").then((m) => renderTopicChecklist("frontier", m));
+        renderStatusSummary("trends", "Trends").then((m) => renderTopicChecklist("trends", m));
+      }
+      return;
+    }
+    await new Promise((r) => setTimeout(r, 4000));
+  }
+  progressEl.innerHTML += `<p class="msg warn">Still running — <a href="${runUrl}" target="_blank" rel="noopener">check the log</a> directly.</p>`;
+}
+
+async function fetchJsonAuth(url) {
+  const res = await fetch(url, { headers: ghHeaders(), cache: "no-store" });
+  if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
+  return res.json();
+}
+
+$("run-btn").addEventListener("click", dispatchRun);
+
+// ============================================================ HISTORY ====
+
+let currentReport = null; // { trackKey, filename, path, content }
+let chatMessages = [];
+
+function renderReportMarkdown(md) {
+  const lines = md.split("\n");
+  const out = [];
+  let inList = false;
+  const closeList = () => {
+    if (inList) {
+      out.push("</ul>");
+      inList = false;
+    }
+  };
+  const inline = (s) =>
+    escapeHtml(s)
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/_(.+?)_/g, "<em>$1</em>");
+  for (const line of lines) {
+    if (line.startsWith("### ")) {
+      closeList();
+      out.push(`<h4>${inline(line.slice(4))}</h4>`);
+    } else if (line.startsWith("## ")) {
+      closeList();
+      out.push(`<h3>${inline(line.slice(3))}</h3>`);
+    } else if (line.startsWith("# ")) {
+      closeList();
+      out.push(`<h2>${inline(line.slice(2))}</h2>`);
+    } else if (line.startsWith("- ")) {
+      if (!inList) {
+        out.push("<ul>");
+        inList = true;
+      }
+      out.push(`<li>${inline(line.slice(2))}</li>`);
+    } else if (line.trim() === "") {
+      closeList();
+    } else {
+      closeList();
+      out.push(`<p>${inline(line)}</p>`);
+    }
+  }
+  closeList();
+  return out.join("\n");
+}
+
+async function openReport(trackKey, filename) {
+  const path = `reports/${trackKey}/${filename}`;
+  $("report-view-section").style.display = "block";
+  $("report-view").innerHTML = `<p class="empty">Loading&hellip;</p>`;
+  $("report-view-section").scrollIntoView({ behavior: "smooth", block: "start" });
+
+  let content;
+  try {
+    content = await fetchText(`${RAW_BASE}/${path}`);
+  } catch (err) {
+    $("report-view").innerHTML = `<p class="msg err">Couldn't load ${escapeHtml(path)}: ${escapeHtml(err.message)}</p>`;
+    return;
+  }
+
+  currentReport = { trackKey, filename, path, content };
+  chatMessages = [];
+  $("chat-box").innerHTML = "";
+  $("report-view").innerHTML = renderReportMarkdown(content);
+
+  const hasKey = !!localStorage.getItem(ANTHROPIC_KEY_KEY);
+  $("chat-key-hint").textContent = hasKey
+    ? `Chatting about ${path}.`
+    : "Add an Anthropic API key in Settings to enable chat.";
+}
+
+async function renderHistoryList(trackKey) {
+  const el = $(`history-${trackKey}`);
+  const reports = await listReports(trackKey);
+  if (!reports.length) {
+    el.innerHTML = `<li class="empty">No reports yet.</li>`;
+    return;
+  }
+  el.innerHTML = reports
+    .map(
+      (f) =>
+        `<li><button class="link" data-track="${trackKey}" data-file="${f.name}">${f.name.replace(".md", "")}</button></li>`
+    )
+    .join("");
+  el.querySelectorAll("button.link").forEach((btn) => {
+    btn.addEventListener("click", () => openReport(btn.dataset.track, btn.dataset.file));
+  });
+}
+
+async function callClaude(model, systemPrompt, messages) {
+  const key = localStorage.getItem(ANTHROPIC_KEY_KEY);
+  if (!key) throw new Error("No Anthropic key saved in Settings.");
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": key,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify({ model, max_tokens: 2048, system: systemPrompt, messages }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Claude API error ${res.status}: ${body.slice(0, 300)}`);
+  }
+  const data = await res.json();
+  return data.content.filter((b) => b.type === "text").map((b) => b.text).join("");
+}
+
+function appendBubble(role, text) {
+  const box = $("chat-box");
+  const div = document.createElement("div");
+  div.className = `bubble ${role}`;
+  const codeMatch = text.match(/```(?:markdown)?\n([\s\S]*?)```/);
+  if (role === "assistant" && codeMatch) {
+    const before = text.slice(0, codeMatch.index);
+    const after = text.slice(codeMatch.index + codeMatch[0].length);
+    div.innerHTML = `${escapeHtml(before)}<pre>${escapeHtml(codeMatch[1])}</pre>${escapeHtml(after)}`;
+    const saveBtn = document.createElement("button");
+    saveBtn.className = "small secondary";
+    saveBtn.textContent = "Save this as the new report version";
+    saveBtn.style.marginTop = "6px";
+    saveBtn.addEventListener("click", () => saveRevision(codeMatch[1]));
+    div.appendChild(document.createElement("br"));
+    div.appendChild(saveBtn);
+  } else {
+    div.textContent = text;
+  }
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+async function saveRevision(newContent) {
+  if (!currentReport) return;
+  try {
+    const { sha } = await getFileSha(currentReport.path);
+    await putFile(currentReport.path, newContent, sha, `Revise ${currentReport.path} via dashboard chat`);
+    currentReport.content = newContent;
+    $("report-view").innerHTML = renderReportMarkdown(newContent);
+    $("chat-msg").className = "msg ok";
+    $("chat-msg").textContent = "Saved.";
+  } catch (err) {
+    $("chat-msg").className = "msg err";
+    $("chat-msg").textContent = `Save failed: ${err.message}`;
+  }
+}
+
+async function sendChat() {
+  if (!currentReport) return;
+  const input = $("chat-input");
+  const text = input.value.trim();
+  if (!text) return;
+  const chatMsg = $("chat-msg");
+  const sendBtn = $("chat-send");
+
+  appendBubble("user", text);
+  chatMessages.push({ role: "user", content: text });
+  input.value = "";
+  sendBtn.disabled = true;
+  chatMsg.className = "msg warn";
+  chatMsg.textContent = "Thinking...";
+
+  const system = `You are helping the user review and, if asked, revise one research report from their personal tracking tool. Here is the current report (${currentReport.path}):\n\n${currentReport.content}\n\nIf the user asks you to rewrite or revise the report, respond with the full replacement Markdown content in a single fenced code block, matching the existing report's structure (headers, sections). Otherwise just answer their question normally.`;
+
+  try {
+    const model = $("chat-model").value;
+    const reply = await callClaude(model, system, chatMessages);
+    chatMessages.push({ role: "assistant", content: reply });
+    appendBubble("assistant", reply);
+    chatMsg.textContent = "";
+  } catch (err) {
+    chatMsg.className = "msg err";
+    chatMsg.textContent = err.message;
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+$("chat-send").addEventListener("click", sendChat);
+$("chat-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendChat();
   }
 });
 
+// ============================================================== USAGE ====
+
+async function renderUsageTab() {
+  let lines = [];
+  try {
+    const text = await fetchText(`${RAW_BASE}/${USAGE_LOG_PATH}`);
+    lines = text
+      .trim()
+      .split("\n")
+      .filter(Boolean)
+      .map((l) => JSON.parse(l));
+  } catch {
+    lines = [];
+  }
+
+  const total = lines.reduce((sum, e) => sum + e.cost_usd, 0);
+  $("usage-total").textContent = `$${total.toFixed(2)}`;
+  $("usage-count").textContent = lines.length;
+  $("usage-avg").textContent = lines.length ? `$${(total / lines.length).toFixed(3)}` : "—";
+
+  const maxCost = Math.max(...lines.map((e) => e.cost_usd), 0.001);
+  $("cost-bars").innerHTML = lines
+    .map((e) => `<div class="bar" style="height:${Math.max(2, (e.cost_usd / maxCost) * 90)}px" title="${e.track} ${e.date}: $${e.cost_usd.toFixed(4)}"></div>`)
+    .join("");
+
+  const tbody = document.querySelector("#usage-table tbody");
+  if (!lines.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty">No runs logged yet.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = [...lines]
+    .reverse()
+    .map(
+      (e) => `<tr>
+        <td>${escapeHtml(e.date)}</td>
+        <td>${escapeHtml(e.track)}</td>
+        <td>${e.input_tokens}</td>
+        <td>${e.cache_read_input_tokens || 0}</td>
+        <td>${e.output_tokens}</td>
+        <td>${e.web_search_requests}</td>
+        <td>$${e.cost_usd.toFixed(4)}</td>
+      </tr>`
+    )
+    .join("");
+}
+
+// ============================================================ SETTINGS ====
+
+function updateTokenStatus() {
+  const has = !!localStorage.getItem(GH_TOKEN_KEY);
+  $("token-status").innerHTML = has
+    ? `<span style="color:var(--ok)">&#9679; Token saved in this browser.</span>`
+    : `<span style="color:var(--muted)">&#9675; No token saved &mdash; running, saving, and viewing report lists will fail until you add one.</span>`;
+}
+function updateAnthropicKeyStatus() {
+  const has = !!localStorage.getItem(ANTHROPIC_KEY_KEY);
+  $("anthropic-key-status").innerHTML = has
+    ? `<span style="color:var(--ok)">&#9679; Key saved in this browser.</span>`
+    : `<span style="color:var(--muted)">&#9675; No key saved &mdash; chat in History won't work until you add one.</span>`;
+}
+
+$("token-save").addEventListener("click", () => {
+  const val = $("token-input").value.trim();
+  if (!val) return;
+  localStorage.setItem(GH_TOKEN_KEY, val);
+  $("token-input").value = "";
+  updateTokenStatus();
+});
+$("token-clear").addEventListener("click", () => {
+  localStorage.removeItem(GH_TOKEN_KEY);
+  updateTokenStatus();
+});
+$("anthropic-key-save").addEventListener("click", () => {
+  const val = $("anthropic-key-input").value.trim();
+  if (!val) return;
+  localStorage.setItem(ANTHROPIC_KEY_KEY, val);
+  $("anthropic-key-input").value = "";
+  updateAnthropicKeyStatus();
+});
+$("anthropic-key-clear").addEventListener("click", () => {
+  localStorage.removeItem(ANTHROPIC_KEY_KEY);
+  updateAnthropicKeyStatus();
+});
+
+async function loadConfigIntoForm() {
+  let cfg;
+  try {
+    cfg = await fetchJson(`${RAW_BASE}/${CONFIG_PATH}`);
+  } catch {
+    cfg = {};
+  }
+  const defaults = { max_new: 5, max_updates: 8, effort: "medium", max_searches: 8 };
+  for (const track of Object.keys(TRACKS)) {
+    const t = { ...defaults, ...(cfg[track] || {}) };
+    $(`${track}-max-new`).value = t.max_new;
+    $(`${track}-max-updates`).value = t.max_updates;
+    $(`${track}-effort`).value = t.effort;
+    $(`${track}-max-searches`).value = t.max_searches;
+  }
+}
+
+$("settings-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const msgEl = $("save-settings-msg");
+  if (!localStorage.getItem(GH_TOKEN_KEY)) {
+    msgEl.className = "msg err";
+    msgEl.textContent = "Add a GitHub token above first.";
+    return;
+  }
+  const btn = $("save-settings-btn");
+  btn.disabled = true;
+  msgEl.className = "msg warn";
+  msgEl.textContent = "Saving...";
+
+  try {
+    const newConfig = {};
+    for (const track of Object.keys(TRACKS)) {
+      newConfig[track] = {
+        max_new: parseInt($(`${track}-max-new`).value, 10),
+        max_updates: parseInt($(`${track}-max-updates`).value, 10),
+        effort: $(`${track}-effort`).value,
+        max_searches: parseInt($(`${track}-max-searches`).value, 10),
+      };
+    }
+    const newText = JSON.stringify(newConfig, null, 2) + "\n";
+    const { sha, contentText } = await getFileSha(CONFIG_PATH);
+    if (contentText.trim() === newText.trim()) {
+      msgEl.className = "msg ok";
+      msgEl.textContent = "No changes to save.";
+    } else {
+      await putFile(CONFIG_PATH, newText, sha, "Update settings via dashboard");
+      msgEl.className = "msg ok";
+      msgEl.textContent = "Saved.";
+    }
+  } catch (err) {
+    msgEl.className = "msg err";
+    msgEl.textContent = `Save failed: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+async function loadPromptsIntoForm() {
+  for (const track of Object.keys(TRACKS)) {
+    try {
+      $(`${track}-prompt`).value = await fetchText(`${RAW_BASE}/prompts/${track}.md`);
+    } catch {
+      $(`${track}-prompt`).value = "";
+    }
+  }
+}
+
+function wireSavePrompt(track) {
+  $(`save-${track}-prompt`).addEventListener("click", async () => {
+    const msgEl = $(`${track}-prompt-msg`);
+    if (!localStorage.getItem(GH_TOKEN_KEY)) {
+      msgEl.className = "msg err";
+      msgEl.textContent = "Add a GitHub token above first.";
+      return;
+    }
+    msgEl.className = "msg warn";
+    msgEl.textContent = "Saving...";
+    try {
+      const path = `prompts/${track}.md`;
+      const newText = $(`${track}-prompt`).value;
+      const { sha, contentText } = await getFileSha(path);
+      if (contentText === newText) {
+        msgEl.className = "msg ok";
+        msgEl.textContent = "No changes to save.";
+        return;
+      }
+      await putFile(path, newText, sha, `Update ${track} prompt via dashboard`);
+      msgEl.className = "msg ok";
+      msgEl.textContent = "Saved.";
+    } catch (err) {
+      msgEl.className = "msg err";
+      msgEl.textContent = `Save failed: ${err.message}`;
+    }
+  });
+}
+wireSavePrompt("frontier");
+wireSavePrompt("trends");
+
+// ================================================================ init ====
+
 async function init() {
   updateTokenStatus();
-  await Promise.all([
-    renderTrack("frontier", "Frontier"),
-    renderTrack("trends", "Trends"),
-    loadConfigIntoForm(),
-    loadScheduleIntoForm(),
+  updateAnthropicKeyStatus();
+  openTabFromHash();
+  window.addEventListener("hashchange", openTabFromHash);
+
+  const [frontierMemory, trendsMemory] = await Promise.all([
+    renderStatusSummary("frontier", "Frontier"),
+    renderStatusSummary("trends", "Trends"),
   ]);
+  renderTopicChecklist("frontier", frontierMemory);
+  renderTopicChecklist("trends", trendsMemory);
+
+  renderHistoryList("frontier");
+  renderHistoryList("trends");
+
+  renderUsageTab();
+
+  loadConfigIntoForm();
+  loadPromptsIntoForm();
+
   $("footer").textContent = `Last refreshed ${new Date().toLocaleString()}`;
 }
 

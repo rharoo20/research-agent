@@ -1,0 +1,73 @@
+name: run-agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      tracks:
+        description: "Which track(s) to run"
+        type: choice
+        options:
+          - both
+          - frontier
+          - trends
+        default: both
+      frontier_exclude_ids:
+        description: "Frontier: comma-separated tracked ids to skip this run"
+        type: string
+        required: false
+        default: ""
+      frontier_extra_focus:
+        description: "Frontier: extra focus for this run (optional)"
+        type: string
+        required: false
+        default: ""
+      trends_exclude_ids:
+        description: "Trends: comma-separated tracked ids to skip this run"
+        type: string
+        required: false
+        default: ""
+      trends_extra_focus:
+        description: "Trends: extra focus for this run (optional)"
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RUN_TRACKS: ${{ inputs.tracks }}
+          FRONTIER_EXCLUDE_IDS: ${{ inputs.frontier_exclude_ids }}
+          FRONTIER_EXTRA_FOCUS: ${{ inputs.frontier_extra_focus }}
+          TRENDS_EXCLUDE_IDS: ${{ inputs.trends_exclude_ids }}
+          TRENDS_EXTRA_FOCUS: ${{ inputs.trends_extra_focus }}
+        run: python agent.py
+
+      - name: Commit updated memory, reports, and usage log
+        run: |
+          git config user.name "research-agent-bot"
+          git config user.email "actions@github.com"
+          git add frontier_memory.json trends_memory.json reports/ usage_log.jsonl
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Run: $(date -u +'%Y-%m-%d %H:%M UTC') (tracks=${{ inputs.tracks }})"
+            git push
+          fi

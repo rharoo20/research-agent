@@ -1,7 +1,7 @@
 # Research Agent
 
-A weekly, autonomous research agent that runs on GitHub Actions. It tracks two
-independent things and emails you a report on each:
+An on-demand research tracker, run from a browser dashboard — no schedule, no
+autonomous spend. It tracks two independent things:
 
 - **Frontier** — emerging technology and research breakthroughs (arXiv,
   bioRxiv, research-lab announcements, patents, technical press) that could
@@ -10,12 +10,69 @@ independent things and emails you a report on each:
   platforms, niche forums, small-business/retail press) before they hit
   mainstream media.
 
-Each run researches the week via Claude + web search, diffs findings against
-a persistent memory file per track (so it never re-reports the same thing as
-new), updates that memory, writes a dated Markdown report into `reports/`,
-and — if there's anything to report — emails you a summary. A live status
-[dashboard](#dashboard) is also available for checking on things and
-tweaking a few settings without touching code.
+You trigger a run from the [dashboard](#dashboard) (`docs/index.html`,
+served via GitHub Pages), watch its progress live, then browse and discuss
+the results — nothing happens on its own until you click **Run**.
+
+## Repo structure
+
+```
+research-agent/
+├── agent.py                        # the research pipeline
+├── config.json                     # per-track tunables (dashboard-editable)
+├── prompts/
+│   ├── frontier.md                 # Frontier track's research brief
+│   └── trends.md                   # Trends track's research brief
+├── frontier_memory.json            # persistent tracked-signal log
+├── trends_memory.json
+├── usage_log.jsonl                 # per-run token/cost log
+├── reports/
+│   ├── frontier/<date>.md
+│   └── trends/<date>.md
+├── docs/index.html                 # the dashboard (GitHub Pages)
+├── requirements.txt
+└── .github/workflows/run-agent.yml # on-demand only — no schedule trigger
+```
+
+## How a run works
+
+1. You open the dashboard's **Home** tab. It shows what's currently tracked
+   per track, then lets you configure this run: which track(s) to include,
+   which currently-tracked topics to skip re-checking this time (unchecked =
+   skipped, not deleted — it stays tracked), and optional free-text extra
+   focus ("also check on fusion energy startups this run").
+2. Clicking **Run** calls GitHub's `workflow_dispatch` API with those
+   choices as inputs, then polls the resulting Actions run for step-by-step
+   progress, shown live on the page.
+3. On GitHub's infrastructure, `agent.py` runs the selected track(s): loads
+   that track's memory → asks Claude (Sonnet 5, with the `web_search` tool)
+   to research, respecting your exclusions/focus for this run → diffs the
+   response against memory (new / updated / nothing to report) → updates
+   memory → writes `reports/<track>/<date>.md` → appends a line to
+   `usage_log.jsonl` with exact token/search counts and cost.
+4. The workflow commits all of that back to the repo. The dashboard's
+   **History**, **Usage / Cost**, and Home-tab status all reflect it once
+   the run completes.
+
+Memory schema (same shape in both `frontier_memory.json` and
+`trends_memory.json`):
+
+```json
+{
+  "id": "short-slug",
+  "first_seen": "YYYY-MM-DD",
+  "topic": "short description",
+  "status": "emerging | developing | maturing | mainstream",
+  "last_update": "YYYY-MM-DD",
+  "summary": "one-line summary",
+  "why_it_matters": "why this is commercially interesting or worth watching",
+  "update_log": ["dated notes on developments over time"]
+}
+```
+
+Everything (memory, reports, usage log) is committed to git by the workflow,
+so `git log` on any of these files is a changelog of what the agent learned
+and spent, run by run.
 
 ## One-time setup
 
@@ -23,86 +80,131 @@ tweaking a few settings without touching code.
 
 1. Go to [platform.claude.com](https://platform.claude.com) and sign in (or create an account).
 2. Go to **Settings → API Keys** and create a new key.
-3. Copy it — you'll add it as a repo secret below. You'll also want billing set up on the account, since this makes real API calls each week.
+3. Copy it. You'll add it as a repo secret in step 3 — it's used server-side, by the GitHub Actions run itself, never by the dashboard directly. Make sure billing/credits are set up on the account.
 
-### 2. Get a Resend API key
+### 2. Enable GitHub Pages
 
-1. Go to [resend.com](https://resend.com) and sign up (or sign in).
-2. Go to **API Keys** and create a new key with send access.
-3. Copy it — you'll add it as a repo secret below. Resend only shows the key once.
+Repo → **Settings → Pages** → under **Build and deployment**, set **Source**
+to **Deploy from a branch**, **Branch** to `main` / `/docs`, then **Save**.
+The dashboard will be live within a minute or two at
+**`https://rharoo20.github.io/research-agent/`**.
 
-Emails are sent from `onboarding@resend.dev`, Resend's shared sandbox
-address — it works with no domain verification, so there's nothing else to
-configure to get started. **Caveat:** without verifying your own domain in
-Resend, this sandbox sender can only deliver to the email address associated
-with your Resend account (Resend's anti-abuse restriction for unverified
-senders). If you want `RECIPIENT_EMAIL` to be a different address, verify a
-domain in Resend and change `RESEND_FROM_ADDRESS` in `agent.py` to an address
-on that domain.
+### 3. Add the one repo secret
 
-### 3. Add repo secrets
-
-In this repo on GitHub: **Settings → Secrets and variables → Actions → New repository secret**. Add all three:
+Repo → **Settings → Secrets and variables → Actions → New repository
+secret**:
 
 | Secret name | Value |
 |---|---|
 | `ANTHROPIC_API_KEY` | The key from step 1 |
-| `RESEND_API_KEY` | The key from step 2 |
-| `RECIPIENT_EMAIL` | Where you want the reports sent |
 
-### 4. Trigger a manual test run before trusting the schedule
+That's the only one. There's no email integration anymore, so nothing else
+is needed server-side.
 
-Don't wait for Saturday. Go to the **Actions** tab → **weekly-report** workflow
-→ **Run workflow** (this uses the `workflow_dispatch` trigger). Watch the run:
+### 4. Create a GitHub token for the dashboard
 
-- It should install dependencies, run `agent.py`, and (assuming it found
-  anything) commit updated `*_memory.json` files and new files under
-  `reports/frontier/` and `reports/trends/` back to the repo.
-- Check your inbox for up to two emails: "Weekly Frontier Report" and
-  "Weekly Trends Report" — subject to the "skip email if nothing to report"
-  behavior described below.
-- Open the new `reports/<track>/<date>.md` files in the repo — these are the
-  primary artifact meant to be read, independent of email.
+Go to
+[github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new)
+and create a **fine-grained personal access token** scoped to **only this
+repository**, with Repository permissions:
 
-If a run fails, check the Actions log first — most failures are a missing/typo'd
-secret, or the Resend sandbox-sender delivery restriction described in step 2
-above (check the Resend dashboard's **Logs** tab for the exact rejection reason).
+- **Contents: Read and write** — saving settings/prompts/report edits.
+- **Actions: Read and write** — triggering a run and reading its progress.
 
-## How it works
+Open the dashboard → **Settings** tab → paste it into **GitHub access** →
+**Save token**. It's stored only in that browser's local storage — never
+sent to me, never committed, never visible in the page's source.
 
-- `agent.py` runs both tracks in one invocation. For each track it: loads
-  `<track>_memory.json` → asks Claude (with the `web_search` tool) to research
-  the week, given what's already tracked → parses Claude's JSON response into
-  new/updated entries → merges into memory → writes
-  `reports/<track>/<YYYY-MM-DD>.md` → emails an HTML summary (skipped if
-  nothing new or updated that week, though the file is still written).
-- Memory schema (same shape in both `frontier_memory.json` and
-  `trends_memory.json`):
+### 5. (Optional) Add an Anthropic key for chat
 
-  ```json
-  {
-    "id": "short-slug",
-    "first_seen": "YYYY-MM-DD",
-    "topic": "short description",
-    "status": "emerging | developing | maturing | mainstream",
-    "last_update": "YYYY-MM-DD",
-    "summary": "one-line summary",
-    "why_it_matters": "why this is commercially interesting or worth watching",
-    "update_log": ["dated notes on developments over time"]
-  }
-  ```
+The **History** tab's "ask Claude about this report" feature calls
+`api.anthropic.com` directly from your browser, using a key you provide —
+this is separate from the server-side key in step 1/3. Get one the same way
+as step 1 (a second key is fine, or reuse the same one), then paste it into
+the dashboard's **Settings** tab → **Anthropic API key**. Skip this if you
+don't want the chat feature; everything else works without it.
 
-- Both memory files and every report file get committed back to the repo by
-  the workflow, so the full history lives in git — `git log` on either memory
-  file is effectively a changelog of what the agent learned week to week.
-- Each run caps itself at 5 new entries and 8 updates per track (configurable
-  — see below) so reports stay skimmable and API cost stays bounded.
+**Be clear-eyed about what this means:** this uses Anthropic's supported
+"direct browser access" mode specifically for cases like this, but a key
+sitting in browser local storage is a real credential exposed to that
+browser — anyone with access to the browser profile could read and use it.
+Fine for a personal tool on your own machine; don't do this on a shared
+computer.
 
-## Editing either track's prompt or focus
+### 6. Do a first run
 
-Both prompts live in `agent.py` as `FRONTIER_PROMPT` and `TRENDS_PROMPT`.
-Edit the prose directly — e.g. to add/remove preferred sources, change what
-counts as noise, or adjust the per-track focus.
+Open the dashboard, go to **Home**, leave the defaults (both tracks, no
+exclusions), click **Run**, and watch it complete. Check **History** and
+**Usage / Cost** afterward to confirm reports and cost logging landed.
+
+## The dashboard, tab by tab
+
+### Home
+
+Per-track status (tracked count, `emerging → mainstream` breakdown), the
+run configuration (track selection, topic exclusion checklist, extra focus
+text), the **Run** button, and live step-by-step progress once a run starts.
+
+### History
+
+Every past report, per track. Click one to read it, and — if you added an
+Anthropic key — chat with Claude about it underneath: ask questions, or ask
+it to rewrite something. If Claude's reply includes a full revised version
+(in a code block), a **Save this as the new report version** button appears
+so you can commit that edit back — nothing gets overwritten without you
+explicitly clicking save.
+
+### Usage / Cost
+
+Total spend, spend per run, and a per-run log (tokens, cached tokens, web
+searches, cost) read straight from `usage_log.jsonl`. This is exact, not
+estimated — `agent.py` logs real `usage` figures from each API response.
+
+### Settings
+
+- The two browser-local keys (Anthropic for chat, GitHub for everything
+  else).
+- Per-track tunables — max new items, max updates, `effort`
+  (low/medium/high), max web searches per run — writing to `config.json`.
+- The two track prompts (`prompts/frontier.md` / `prompts/trends.md`),
+  editable directly. Keep the `<<...>>` placeholders intact — see the
+  in-page hint for which ones matter.
+
+## Cost
+
+Two separate things now:
+
+**A run.** Same Claude Sonnet 5 + `web_search` pipeline as before, priced at
+$2/$10 per million input/output tokens and $10 per 1,000 searches (current
+published pricing, checked 2026-08). What changed since the first version:
+`effort` now defaults to `medium` instead of `high`, the search cap defaults
+to 8 instead of 15, and the initial prompt is cache-enabled — a run that
+needs multiple search rounds now re-reads that cached prefix at ~10% of
+input price instead of rebilling it from scratch each time. All three
+(effort, search cap, and whether caching helps) are visible per-run in
+**Usage / Cost**, so real cost is always checkable instead of estimated.
+The one thing that hasn't changed: cost now only happens when you click
+**Run** — no unattended schedule spending in the background.
+
+**Chat.** Genuinely open-ended, since you control how much you use it.
+Defaults to Haiku 4.5 ($1/$5 per MTok — a fraction of Sonnet 5's cost), with
+a dropdown to switch to Sonnet 5 per-conversation if a question needs it.
+
+## Editing a track's research focus
+
+Edit `prompts/frontier.md` or `prompts/trends.md` directly (in the repo or
+via the dashboard's Settings tab) — e.g. to add/remove preferred sources,
+change what counts as noise, or shift the focus. `<<MEMORY_JSON>>`,
+`<<TODAY>>`, `<<MAX_NEW>>`, `<<MAX_UPDATES>>`, `<<EXTRA_FOCUS_BLOCK>>`,
+`<<STATUS_ANCHORS>>`, and `<<OUTPUT_SCHEMA>>` are all substituted at run
+time — keep them if you want that data available to the model.
+`<<STATUS_ANCHORS>>` and `<<OUTPUT_SCHEMA>>` pull from fixed constants in
+`agent.py` rather than being freely editable text, since the latter in
+particular defines the exact JSON contract `agent.py` depends on to parse
+Claude's response — a corrupted version of it would break every run. If you
+accidentally delete the `<<OUTPUT_SCHEMA>>` placeholder itself, `agent.py`
+appends the schema instructions anyway as a safety net, but the other
+placeholders have no such fallback.
 
 The `emerging → developing → maturing → mainstream` status scale is shared
 between both tracks and defined once, in the `STATUS_ANCHORS` constant near
@@ -120,84 +222,20 @@ or loosen these anchor definitions rather than adding a numeric threshold —
 they're deliberately judgment-based so the model can weigh real-world
 evidence instead of counting weeks.
 
-The per-week item caps live in `config.json` at the repo root (not in
-`agent.py`) so they can be changed without touching code — edit the file
-directly, or use the [dashboard](#dashboard) below.
+## Running `agent.py` locally
 
-## Schedule and the DST caveat
+Useful for testing changes without going through the dashboard/Actions:
 
-The workflow (`.github/workflows/weekly-report.yml`) is scheduled for
-**Saturday 9am America/Chicago**. GitHub Actions `schedule` triggers run on
-UTC cron and have **no timezone or DST awareness**, so the cron expression is
-a fixed UTC time that only matches 9am Chicago time for part of the year:
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+python agent.py                       # both tracks, no exclusions/focus
+RUN_TRACKS=frontier python agent.py   # just one track
+FRONTIER_EXCLUDE_IDS="some-id,another-id" \
+FRONTIER_EXTRA_FOCUS="also check on X" \
+  python agent.py
+```
 
-- `0 14 * * 6` → 9am **CDT** (UTC-5), correct roughly mid-March through
-  early November — this is what's currently in the workflow.
-- `0 15 * * 6` → 9am **CST** (UTC-6), correct roughly early November through
-  mid-March.
-
-Flip between the two lines around the US DST transitions if you want the
-send time to stay accurate to the hour, or just leave it — the drift is one
-hour, twice a year, and cosmetic.
-
-`workflow_dispatch` (the manual trigger) ignores the cron schedule entirely,
-so you can always run it on demand regardless of what time it currently is.
-
-You can also change the schedule (and the item caps above) from the
-[dashboard](#dashboard) instead of editing the cron line by hand.
-
-## Dashboard
-
-A small static status page lives at `docs/index.html` and is meant to be
-served via GitHub Pages at **`https://rharoo20.github.io/research-agent/`**.
-It's read-heavy and write-light: on load it pulls live data straight from
-this public repo (no login needed to *view* it) and shows, per track, how
-many things are tracked, their `emerging → mainstream` breakdown, and links
-to every past report. A **Settings** section lets you edit the per-track item
-caps and the delivery day/time, which commit straight back to this repo when
-saved.
-
-### One-time setup
-
-1. **Enable Pages:** repo → **Settings → Pages** → under **Build and
-   deployment**, set **Source** to **Deploy from a branch**, **Branch** to
-   `main` / `/docs`, then **Save**. GitHub will publish the URL above within
-   a minute or two of the next push.
-2. **Create a token for saving changes** (skip this if you only want to
-   *view* the dashboard): go to
-   [github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new)
-   and create a **fine-grained personal access token** scoped to **only this
-   repository**, with **Repository permissions → Contents: Read and write**
-   and nothing else. Open the dashboard, paste the token into the **GitHub
-   access** box at the bottom, and click **Save token**.
-
-### What the token can and can't do, and where it lives
-
-The token is stored **only in your browser's `localStorage`** — it's never
-sent to me, never committed anywhere, and never appears in the page's
-source. It's used exclusively for direct browser-to-`api.github.com` calls
-when you click **Save changes**. Scoping it to *this repo only* with
-*Contents* permission means, worst case if it ever leaked, someone could
-edit files in this one repo — not your other repos, not your account
-settings, not GitHub Secrets.
-
-**`RECIPIENT_EMAIL` is deliberately not on the dashboard.** The dashboard can
-only write to plain repo files (via the Contents API), not to encrypted
-GitHub Secrets — and this repo is public, so anything the dashboard could
-read/write in a plain file would be publicly visible to anyone with the
-Pages URL. An email address is exactly the kind of thing that shouldn't leak
-that way, so it stays a Secret, changed the normal way (**Settings → Secrets
-and variables → Actions**), not through the dashboard.
-
-### Item caps and schedule live in real files
-
-- Caps: `config.json` at the repo root (`{"frontier": {"max_new": 5,
-  "max_updates": 8}, "trends": {...}}`).
-- Schedule: the `cron:` line in `.github/workflows/weekly-report.yml`. The
-  dashboard's day/time picker assumes Central Daylight Time (UTC−5) the same
-  way the plain-cron instructions above do, including the same DST drift
-  caveat.
-
-Both are ordinary files — you can always hand-edit and commit them yourself
-instead of using the dashboard; nothing about the dashboard is required for
-the agent to run.
+Env vars `agent.py` reads: `ANTHROPIC_API_KEY` (required), `RUN_TRACKS`
+(`both` / `frontier` / `trends`, default `both`), and per track
+`{TRACK}_EXCLUDE_IDS` / `{TRACK}_EXTRA_FOCUS` (both optional) — these are
+exactly what the dashboard's Run button sets as `workflow_dispatch` inputs.
