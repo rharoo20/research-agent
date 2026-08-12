@@ -25,11 +25,11 @@
     :root {
       --bg: #14161a;
       --fg: #e8e8e8;
-      --muted: #9a9a9a;
+      --muted: #9fa3ab;
       --border: #333;
       --card: #1e2126;
       --card2: #262a31;
-      --accent: #4f8bff;
+      --accent: #5b93ff;
       --accent-fg: #0a0a0a;
       --ok: #4ade80;
       --warn: #fbbf24;
@@ -45,14 +45,15 @@
     background: var(--bg);
     color: var(--fg);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    line-height: 1.5;
+    line-height: 1.55;
   }
   main { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
-  h1 { font-size: 22px; margin: 0 0 4px; }
-  h2 { font-size: 17px; margin: 0 0 12px; }
-  h3 { font-size: 15px; margin: 16px 0 6px; }
-  .subtitle { color: var(--muted); font-size: 14px; margin: 0 0 20px; }
+  h1 { font-size: 23px; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 0 0 6px; }
+  h3 { font-size: 15px; margin: 18px 0 6px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin: 0 0 22px; }
   .subtitle a { color: inherit; }
+  .section-desc { color: var(--muted); font-size: 13.5px; margin: 0 0 16px; max-width: 62ch; }
 
   nav.tabs {
     display: flex;
@@ -83,32 +84,32 @@
   section {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px 20px;
+    border-radius: 12px;
+    padding: 20px 22px;
     margin-bottom: 18px;
   }
   .tracks { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   @media (max-width: 720px) { .tracks { grid-template-columns: 1fr; } }
-  .stat-row { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
+  .stat-row { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 14px; }
   .stat { min-width: 70px; }
-  .stat .n { font-size: 22px; font-weight: 600; }
-  .stat .l { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .02em; }
-  .status-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 10px; background: var(--border); }
-  .status-bar span { display: block; }
-  .status-emerging { background: #94a3b8; }
-  .status-developing { background: #60a5fa; }
-  .status-maturing { background: #f59e0b; }
-  .status-mainstream { background: #22c55e; }
-  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
-  .legend .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+  .stat .n { font-size: 24px; font-weight: 700; }
+  .stat-row.big .n { font-size: 32px; }
+  .stat .l { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .02em; margin-top: 2px; }
+
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-size: 12px; font-weight: 700; padding: 5px 11px; border-radius: 999px; color: #fff; }
+  .chip-emerging { background: #64748b; }
+  .chip-developing { background: #3b82f6; }
+  .chip-maturing { background: #d97706; }
+  .chip-mainstream { background: #16a34a; }
 
   .empty { color: var(--muted); font-size: 14px; font-style: italic; }
   label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
   input[type=number], input[type=text], input[type=password], select, textarea {
     width: 100%;
-    padding: 7px 9px;
+    padding: 8px 10px;
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 7px;
     background: var(--bg);
     color: var(--fg);
     font-size: 14px;
@@ -116,15 +117,15 @@
     font-family: inherit;
   }
   textarea { resize: vertical; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
   @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
-  fieldset { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px 2px; margin: 0 0 16px; }
-  legend { font-size: 13px; font-weight: 600; padding: 0 6px; }
+  fieldset { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px 2px; margin: 0 0 16px; }
+  legend { font-size: 13px; font-weight: 700; padding: 0 6px; }
   button {
     background: var(--accent);
     color: var(--accent-fg);
     border: none;
-    border-radius: 6px;
+    border-radius: 7px;
     padding: 9px 16px;
     font-size: 14px;
     font-weight: 600;
@@ -132,22 +133,57 @@
   }
   button.secondary { background: transparent; color: var(--fg); border: 1px solid var(--border); font-weight: 500; }
   button.small { padding: 5px 10px; font-size: 12px; }
+  button.btn-lg { padding: 13px 30px; font-size: 15.5px; }
+  button.linklike { background: none; border: none; color: var(--accent); padding: 0; font-weight: 600; font-size: inherit; text-decoration: underline; cursor: pointer; }
   button:disabled { opacity: .5; cursor: default; }
   .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .msg { font-size: 13px; margin-top: 10px; min-height: 1.2em; }
   .msg.ok { color: var(--ok); }
   .msg.warn { color: var(--warn); }
   .msg.err { color: var(--err); }
-  .hint { font-size: 12px; color: var(--muted); margin-top: -6px; margin-bottom: 14px; }
+  .hint { font-size: 12.5px; color: var(--muted); margin-top: -6px; margin-bottom: 14px; }
   footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 30px; }
 
-  .topic-list { max-height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 12px; background: var(--bg); }
-  .topic-list label { display: flex; align-items: flex-start; gap: 6px; font-size: 13px; color: var(--fg); margin-bottom: 6px; font-weight: normal; }
-  .topic-list input[type=checkbox] { margin: 0; width: auto; }
+  /* setup banner */
+  .setup-banner { border: 1px solid var(--warn); background: color-mix(in srgb, var(--warn) 10%, var(--card)); }
+  .setup-banner.subtle { border-color: var(--border); background: var(--card2); padding: 14px 18px; }
+  .setup-list { list-style: none; margin: 0 0 14px; padding: 0; font-size: 14px; }
+  .setup-list li { padding: 4px 0; }
 
-  .steps { list-style: none; margin: 12px 0 0; padding: 0; font-size: 13px; }
-  .steps li { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
-  .step-icon { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+  .req-badge, .opt-badge { font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: middle; text-transform: uppercase; letter-spacing: .02em; }
+  .req-badge { background: color-mix(in srgb, var(--err) 18%, transparent); color: var(--err); }
+  .opt-badge { background: color-mix(in srgb, var(--muted) 20%, transparent); color: var(--muted); }
+
+  /* track toggle cards */
+  .track-toggles { display: flex; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
+  .track-toggle {
+    display: flex; align-items: center; gap: 12px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 12px 16px; cursor: pointer; background: var(--bg);
+    flex: 1; min-width: 220px;
+  }
+  .track-toggle:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--bg)); }
+  .track-toggle input[type=checkbox] { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); flex-shrink: 0; }
+  .track-toggle .toggle-sub { display: block; font-size: 12px; color: var(--muted); font-weight: normal; margin-top: 1px; }
+
+  /* collapsible advanced sections */
+  details { margin-top: 6px; }
+  details > summary {
+    cursor: pointer; color: var(--accent); font-size: 13.5px; font-weight: 600;
+    list-style: none; padding: 4px 0;
+  }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary::before { content: "▸ "; }
+  details[open] > summary::before { content: "▾ "; }
+  details .details-body { margin-top: 14px; }
+
+  .topic-list { max-height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: 7px; padding: 10px 12px; margin-bottom: 12px; background: var(--bg); }
+  .topic-list label { display: flex; align-items: flex-start; gap: 7px; font-size: 13px; color: var(--fg); margin-bottom: 7px; font-weight: normal; }
+  .topic-list input[type=checkbox] { margin: 2px 0 0; width: auto; accent-color: var(--accent); }
+
+  .steps { list-style: none; margin: 14px 0 0; padding: 0; font-size: 13.5px; }
+  .steps li { display: flex; align-items: center; gap: 9px; padding: 5px 0; }
+  .step-icon { width: 15px; height: 15px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
   .step-queued { background: var(--border); }
   .step-in_progress { background: var(--warn); animation: pulse 1.2s infinite; }
   .step-completed-success { background: var(--ok); }
@@ -155,31 +191,32 @@
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
 
   .report-list { list-style: none; margin: 0; padding: 0; font-size: 14px; }
-  .report-list li { margin-bottom: 4px; }
+  .report-list li { margin-bottom: 8px; }
   .report-list button.link {
-    background: none; border: none; color: var(--accent); padding: 2px 0;
-    font-size: 14px; text-decoration: none; cursor: pointer; font-weight: 500;
+    display: block; width: 100%; text-align: left;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 11px 14px; color: var(--fg); font-size: 14px; font-weight: 600; cursor: pointer;
   }
-  .report-list button.link:hover { text-decoration: underline; }
+  .report-list button.link:hover { border-color: var(--accent); }
 
-  .report-view { border-top: 1px solid var(--border); margin-top: 14px; padding-top: 14px; }
-  .report-view h2 { font-size: 18px; }
+  .report-view { border-top: 1px solid var(--border); margin-top: 16px; padding-top: 16px; }
+  .report-view h2 { font-size: 19px; }
   .report-view h3 { font-size: 15px; margin-top: 18px; }
   .report-view h4 { font-size: 14px; margin: 14px 0 4px; }
   .report-view ul { padding-left: 20px; }
 
-  .chat-box { border: 1px solid var(--border); border-radius: 8px; padding: 12px; background: var(--bg); max-height: 420px; overflow-y: auto; margin-bottom: 10px; }
-  .bubble { max-width: 85%; padding: 8px 12px; border-radius: 10px; margin-bottom: 8px; font-size: 13px; white-space: pre-wrap; }
+  .chat-box { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: var(--bg); max-height: 420px; overflow-y: auto; margin-bottom: 10px; }
+  .bubble { max-width: 85%; padding: 9px 13px; border-radius: 12px; margin-bottom: 8px; font-size: 13.5px; white-space: pre-wrap; }
   .bubble.user { background: var(--bubble-user); margin-left: auto; }
   .bubble.assistant { background: var(--bubble-assistant); margin-right: auto; }
   .bubble pre { background: rgba(127,127,127,.15); padding: 8px; border-radius: 6px; overflow-x: auto; font-size: 12px; }
   .chat-input-row { display: flex; gap: 8px; }
   .chat-input-row textarea { margin-bottom: 0; flex: 1; }
 
-  .cost-bars { display: flex; align-items: flex-end; gap: 3px; height: 90px; margin: 12px 0; overflow-x: auto; padding-bottom: 2px; }
+  .cost-bars { display: flex; align-items: flex-end; gap: 3px; height: 90px; margin: 14px 0; overflow-x: auto; padding-bottom: 2px; }
   .cost-bars .bar { width: 10px; background: var(--accent); border-radius: 2px 2px 0 0; flex-shrink: 0; min-height: 2px; }
   table.usage-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  table.usage-table th, table.usage-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  table.usage-table th, table.usage-table td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); }
   table.usage-table th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
 
   .prompt-editor { min-height: 220px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
@@ -189,10 +226,10 @@
 
 <nav class="tabs">
   <div class="tabwrap">
-    <button class="tab-btn active" data-tab="home">Home</button>
-    <button class="tab-btn" data-tab="history">History</button>
-    <button class="tab-btn" data-tab="usage">Usage / Cost</button>
-    <button class="tab-btn" data-tab="settings">Settings</button>
+    <button class="tab-btn active" data-tab="home">🏠 Home</button>
+    <button class="tab-btn" data-tab="history">🕘 History</button>
+    <button class="tab-btn" data-tab="usage">💰 Usage &amp; Cost</button>
+    <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
   </div>
 </nav>
 
@@ -200,43 +237,65 @@
 
   <h1>Research Agent Dashboard</h1>
   <p class="subtitle">
-    Frontier + Trends, on-demand &middot;
+    Frontier + Trends, run whenever you want &middot;
     <a href="https://github.com/rharoo20/research-agent" target="_blank" rel="noopener">rharoo20/research-agent</a>
   </p>
+
+  <section id="setup-banner" style="display:none"></section>
 
   <!-- ============================= HOME ============================= -->
   <div class="tab-panel active" id="tab-home">
 
     <section class="tracks" id="status-tracks">
-      <div id="status-frontier"><h2>Frontier</h2><p class="empty">Loading&hellip;</p></div>
-      <div id="status-trends"><h2>Trends</h2><p class="empty">Loading&hellip;</p></div>
+      <div id="status-frontier"><h2>🧭 Frontier</h2><p class="empty">Loading&hellip;</p></div>
+      <div id="status-trends"><h2>📈 Trends</h2><p class="empty">Loading&hellip;</p></div>
     </section>
 
     <section>
-      <h2>Run</h2>
-      <p class="hint">
-        Uncheck a topic to skip researching updates for it this run (it stays
-        tracked — this only affects this one run). Add optional extra focus
-        text to steer this run without editing the base prompt.
+      <h2>▶️ Run a check</h2>
+      <p class="section-desc">
+        Choose which tracker(s) to check, then click Run. It usually takes a
+        few minutes and costs a small amount — you'll see the exact cost
+        afterward in Usage &amp; Cost.
       </p>
 
-      <div class="grid2">
-        <fieldset>
-          <legend><label style="display:inline;margin:0"><input type="checkbox" id="run-frontier" checked style="width:auto;margin-right:6px"> Run Frontier</label></legend>
-          <div class="topic-list" id="frontier-topic-list"><p class="empty">Loading topics&hellip;</p></div>
-          <label for="frontier-extra-focus">Additional focus for this run (optional)</label>
-          <textarea id="frontier-extra-focus" rows="2" placeholder="e.g. also check on fusion energy startups"></textarea>
-        </fieldset>
-        <fieldset>
-          <legend><label style="display:inline;margin:0"><input type="checkbox" id="run-trends" checked style="width:auto;margin-right:6px"> Run Trends</label></legend>
-          <div class="topic-list" id="trends-topic-list"><p class="empty">Loading topics&hellip;</p></div>
-          <label for="trends-extra-focus">Additional focus for this run (optional)</label>
-          <textarea id="trends-extra-focus" rows="2" placeholder="e.g. also check on fermented food products"></textarea>
-        </fieldset>
+      <div class="track-toggles">
+        <label class="track-toggle">
+          <input type="checkbox" id="run-frontier" checked>
+          <span>
+            <strong>Frontier</strong>
+            <span class="toggle-sub">Emerging tech &amp; research</span>
+          </span>
+        </label>
+        <label class="track-toggle">
+          <input type="checkbox" id="run-trends" checked>
+          <span>
+            <strong>Trends</strong>
+            <span class="toggle-sub">Early consumer &amp; culture signals</span>
+          </span>
+        </label>
       </div>
 
-      <div class="row">
-        <button id="run-btn">Run</button>
+      <details>
+        <summary>Fine-tune this run (optional)</summary>
+        <div class="details-body grid2">
+          <div>
+            <p class="section-desc" style="margin-bottom:8px">Frontier — uncheck anything you don't need re-checked right now (it stays tracked either way):</p>
+            <div class="topic-list" id="frontier-topic-list"><p class="empty">Loading&hellip;</p></div>
+            <label for="frontier-extra-focus">Anything specific to look into this time?</label>
+            <textarea id="frontier-extra-focus" rows="2" placeholder="e.g. also check on fusion energy startups"></textarea>
+          </div>
+          <div>
+            <p class="section-desc" style="margin-bottom:8px">Trends — uncheck anything you don't need re-checked right now (it stays tracked either way):</p>
+            <div class="topic-list" id="trends-topic-list"><p class="empty">Loading&hellip;</p></div>
+            <label for="trends-extra-focus">Anything specific to look into this time?</label>
+            <textarea id="trends-extra-focus" rows="2" placeholder="e.g. also check on fermented food products"></textarea>
+          </div>
+        </div>
+      </details>
+
+      <div class="row" style="margin-top:18px">
+        <button id="run-btn" class="btn-lg">Run</button>
         <span class="msg" id="run-msg"></span>
       </div>
 
@@ -246,13 +305,14 @@
 
   <!-- ============================ HISTORY ============================ -->
   <div class="tab-panel" id="tab-history">
+    <p class="section-desc">Everything a check has ever found, organized by week. Click one to read it — and if you've connected Claude, ask questions or have it help you edit it.</p>
     <section class="tracks">
       <div>
-        <h2>Frontier reports</h2>
+        <h2>🧭 Frontier</h2>
         <ul class="report-list" id="history-frontier"><li class="empty">Loading&hellip;</li></ul>
       </div>
       <div>
-        <h2>Trends reports</h2>
+        <h2>📈 Trends</h2>
         <ul class="report-list" id="history-trends"><li class="empty">Loading&hellip;</li></ul>
       </div>
     </section>
@@ -260,14 +320,14 @@
     <section id="report-view-section" style="display:none">
       <div class="report-view" id="report-view"></div>
 
-      <div style="margin-top:20px">
-        <h3>Ask Claude about this report</h3>
+      <div style="margin-top:22px">
+        <h3>💬 Ask Claude about this report</h3>
         <p class="hint" id="chat-key-hint"></p>
         <div class="row" style="margin-bottom:10px">
           <label for="chat-model" style="margin:0">Model</label>
           <select id="chat-model" style="width:auto;margin:0">
-            <option value="claude-haiku-4-5" selected>Haiku 4.5 (cheap, default)</option>
-            <option value="claude-sonnet-5">Sonnet 5 (stronger, pricier)</option>
+            <option value="claude-haiku-4-5" selected>Fast &amp; cheap (default)</option>
+            <option value="claude-sonnet-5">Stronger (costs more)</option>
           </select>
         </div>
         <div class="chat-box" id="chat-box"></div>
@@ -283,99 +343,108 @@
   <!-- ============================= USAGE ============================= -->
   <div class="tab-panel" id="tab-usage">
     <section>
-      <h2>Spend</h2>
-      <div class="stat-row">
-        <div class="stat"><div class="n" id="usage-total">&mdash;</div><div class="l">total spent</div></div>
-        <div class="stat"><div class="n" id="usage-count">&mdash;</div><div class="l">runs logged</div></div>
-        <div class="stat"><div class="n" id="usage-avg">&mdash;</div><div class="l">avg / run</div></div>
+      <h2>💰 What you've spent</h2>
+      <p class="section-desc">Real numbers from Anthropic, logged automatically after every run — not an estimate.</p>
+      <div class="stat-row big">
+        <div class="stat"><div class="n" id="usage-total">—</div><div class="l">total spent</div></div>
+        <div class="stat"><div class="n" id="usage-count">—</div><div class="l">checks run</div></div>
+        <div class="stat"><div class="n" id="usage-avg">—</div><div class="l">avg per check</div></div>
       </div>
       <div class="cost-bars" id="cost-bars"></div>
-      <p class="hint">Each bar is one track's run, oldest to newest, height scaled to its cost.</p>
+      <p class="hint">Each bar is one check, oldest to newest — taller means it cost more.</p>
     </section>
 
     <section>
-      <h2>Run log</h2>
-      <div style="overflow-x:auto">
-        <table class="usage-table" id="usage-table">
-          <thead><tr><th>Date</th><th>Track</th><th>Input tok</th><th>Cached</th><th>Output tok</th><th>Searches</th><th>Cost</th></tr></thead>
-          <tbody><tr><td colspan="7" class="empty">Loading&hellip;</td></tr></tbody>
-        </table>
-      </div>
+      <details>
+        <summary>Show the detailed run log</summary>
+        <div class="details-body" style="overflow-x:auto">
+          <table class="usage-table" id="usage-table">
+            <thead><tr><th>Date</th><th>Track</th><th>Input tok</th><th>Cached</th><th>Output tok</th><th>Searches</th><th>Cost</th></tr></thead>
+            <tbody><tr><td colspan="7" class="empty">Loading&hellip;</td></tr></tbody>
+          </table>
+        </div>
+      </details>
     </section>
   </div>
 
   <!-- ============================ SETTINGS ============================ -->
   <div class="tab-panel" id="tab-settings">
     <section>
-      <h2>Anthropic API key</h2>
-      <p class="hint">
-        Used only for the chat feature in History, calling
-        <code>api.anthropic.com</code> directly from this page (Anthropic's
-        supported "direct browser access" mode). Stored only in this
-        browser's local storage — never sent anywhere else, never committed
-        to the repo. This is a real credential in your browser's storage;
-        anyone with access to this browser profile could read it.
-      </p>
+      <h2>🔗 Connect your accounts</h2>
+      <p class="section-desc">Both keys are stored only in this browser — never sent to anyone else, never saved in the repo.</p>
+
+      <h3>GitHub <span class="req-badge">Required</span></h3>
+      <p class="section-desc" style="margin-bottom:10px">Lets the dashboard run checks for you and save your changes.</p>
       <div class="row">
-        <input type="password" id="anthropic-key-input" placeholder="sk-ant-..." style="flex:1; min-width:220px; margin-bottom:0;">
+        <input type="password" id="token-input" placeholder="Paste your GitHub token" style="flex:1; min-width:220px; margin-bottom:0;">
+        <button type="button" id="token-save" class="secondary">Save</button>
+        <button type="button" id="token-clear" class="secondary">Clear</button>
+      </div>
+      <p class="msg" id="token-status"></p>
+      <details>
+        <summary>How do I get one?</summary>
+        <div class="details-body section-desc">
+          1. Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">this GitHub page</a> and create a new token.<br>
+          2. Under <strong>Repository access</strong>, choose <strong>Only select repositories</strong> and pick this one.<br>
+          3. Under <strong>Permissions</strong>, turn on <strong>Contents: Read and write</strong> and <strong>Actions: Read and write</strong>.<br>
+          4. Generate it, copy it, and paste it above. Scoping it to just this one repo means the worst case if it ever leaked is limited to this repo — not your whole GitHub account.
+        </div>
+      </details>
+
+      <h3 style="margin-top:24px">Claude <span class="opt-badge">Optional</span></h3>
+      <p class="section-desc" style="margin-bottom:10px">Only needed for the chat feature in History.</p>
+      <div class="row">
+        <input type="password" id="anthropic-key-input" placeholder="Paste your Claude API key" style="flex:1; min-width:220px; margin-bottom:0;">
         <button type="button" id="anthropic-key-save" class="secondary">Save</button>
         <button type="button" id="anthropic-key-clear" class="secondary">Clear</button>
       </div>
       <p class="msg" id="anthropic-key-status"></p>
+      <details>
+        <summary>How do I get one, and is this safe?</summary>
+        <div class="details-body section-desc">
+          Get one at <a href="https://platform.claude.com" target="_blank" rel="noopener">platform.claude.com</a>
+          under Settings → API Keys. This page uses it to talk to Claude
+          directly from your browser — Anthropic's own supported way of doing
+          that for a personal tool like this one. Treat it like a password:
+          it's stored only in this browser, and anyone with access to this
+          browser profile could use it.
+        </div>
+      </details>
     </section>
 
     <section>
-      <h2>GitHub access</h2>
-      <p class="hint">
-        Used to trigger runs, read run progress, and save settings/prompt/report
-        changes below. Stored only in this browser's local storage. Create a
-        <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained personal access token</a>
-        scoped to <strong>only this repository</strong>, with Repository
-        permissions &rarr; <strong>Contents: Read and write</strong> and
-        <strong>Actions: Read and write</strong> (Actions is needed to trigger
-        and poll runs from the Home tab; Contents is needed to save changes
-        below).
-      </p>
-      <div class="row">
-        <input type="password" id="token-input" placeholder="github_pat_..." style="flex:1; min-width:220px; margin-bottom:0;">
-        <button type="button" id="token-save" class="secondary">Save token</button>
-        <button type="button" id="token-clear" class="secondary">Clear</button>
-      </div>
-      <p class="msg" id="token-status"></p>
-    </section>
-
-    <section>
-      <h2>Per-track settings</h2>
+      <h2>🎛️ How thorough should checks be?</h2>
+      <p class="section-desc">Higher settings find more but cost a little more. The defaults are a good balance for most people.</p>
       <form id="settings-form">
         <div class="grid2">
           <fieldset>
             <legend>Frontier</legend>
-            <label for="frontier-max-new">Max new items / run</label>
+            <label for="frontier-max-new">New things to surface per check</label>
             <input type="number" id="frontier-max-new" min="1" max="50" required>
-            <label for="frontier-max-updates">Max updates / run</label>
+            <label for="frontier-max-updates">Updates to look for per check</label>
             <input type="number" id="frontier-max-updates" min="1" max="50" required>
-            <label for="frontier-effort">Effort</label>
+            <label for="frontier-effort">How thorough</label>
             <select id="frontier-effort">
               <option value="low">Low (cheapest)</option>
               <option value="medium">Medium (recommended)</option>
               <option value="high">High (most thorough, priciest)</option>
             </select>
-            <label for="frontier-max-searches">Max web searches / run</label>
+            <label for="frontier-max-searches">Web searches per check</label>
             <input type="number" id="frontier-max-searches" min="1" max="30" required>
           </fieldset>
           <fieldset>
             <legend>Trends</legend>
-            <label for="trends-max-new">Max new items / run</label>
+            <label for="trends-max-new">New things to surface per check</label>
             <input type="number" id="trends-max-new" min="1" max="50" required>
-            <label for="trends-max-updates">Max updates / run</label>
+            <label for="trends-max-updates">Updates to look for per check</label>
             <input type="number" id="trends-max-updates" min="1" max="50" required>
-            <label for="trends-effort">Effort</label>
+            <label for="trends-effort">How thorough</label>
             <select id="trends-effort">
               <option value="low">Low (cheapest)</option>
               <option value="medium">Medium (recommended)</option>
               <option value="high">High (most thorough, priciest)</option>
             </select>
-            <label for="trends-max-searches">Max web searches / run</label>
+            <label for="trends-max-searches">Web searches per check</label>
             <input type="number" id="trends-max-searches" min="1" max="30" required>
           </fieldset>
         </div>
@@ -387,26 +456,32 @@
     </section>
 
     <section>
-      <h2>Prompts</h2>
-      <p class="hint">
-        The research brief each track uses. Keep the <code>&lt;&lt;...&gt;&gt;</code>
-        placeholders intact — they're substituted at run time. If
-        <code>&lt;&lt;OUTPUT_SCHEMA&gt;&gt;</code> is accidentally removed the
-        code still appends it automatically as a safety net, but the other
-        placeholders (memory, caps, focus text) will just stop working if removed.
-      </p>
-      <label for="frontier-prompt">Frontier prompt</label>
-      <textarea id="frontier-prompt" class="prompt-editor"></textarea>
-      <div class="row" style="margin-bottom:16px">
-        <button type="button" id="save-frontier-prompt" class="secondary">Save Frontier prompt</button>
-        <span class="msg" id="frontier-prompt-msg"></span>
-      </div>
-      <label for="trends-prompt">Trends prompt</label>
-      <textarea id="trends-prompt" class="prompt-editor"></textarea>
-      <div class="row">
-        <button type="button" id="save-trends-prompt" class="secondary">Save Trends prompt</button>
-        <span class="msg" id="trends-prompt-msg"></span>
-      </div>
+      <h2>✏️ Customize what each tracker looks for</h2>
+      <p class="section-desc">Advanced — this is the exact research brief Claude follows. Most people won't need to touch this.</p>
+      <details>
+        <summary>Show the research instructions</summary>
+        <div class="details-body">
+          <p class="hint">
+            Keep the <code>&lt;&lt;...&gt;&gt;</code> placeholders intact — they get
+            filled in automatically at run time. If
+            <code>&lt;&lt;OUTPUT_SCHEMA&gt;&gt;</code> is accidentally removed it's
+            added back automatically as a safety net, but the other
+            placeholders (memory, limits, focus text) simply stop working if removed.
+          </p>
+          <label for="frontier-prompt">Frontier</label>
+          <textarea id="frontier-prompt" class="prompt-editor"></textarea>
+          <div class="row" style="margin-bottom:16px">
+            <button type="button" id="save-frontier-prompt" class="secondary">Save Frontier instructions</button>
+            <span class="msg" id="frontier-prompt-msg"></span>
+          </div>
+          <label for="trends-prompt">Trends</label>
+          <textarea id="trends-prompt" class="prompt-editor"></textarea>
+          <div class="row">
+            <button type="button" id="save-trends-prompt" class="secondary">Save Trends instructions</button>
+            <span class="msg" id="trends-prompt-msg"></span>
+          </div>
+        </div>
+      </details>
     </section>
   </div>
 
@@ -431,6 +506,10 @@ const TRACKS = { frontier: "Frontier", trends: "Trends" };
 const $ = (id) => document.getElementById(id);
 const escapeHtml = (s) =>
   (s || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const formatDate = (isoDate) => {
+  const d = new Date(`${isoDate}T00:00:00`);
+  return isNaN(d) ? isoDate : d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+};
 
 // ---------------------------------------------------------------- tabs ----
 document.querySelectorAll(".tab-btn").forEach((btn) => {
@@ -446,6 +525,9 @@ function openTabFromHash() {
   const tab = location.hash.replace("#", "") || "home";
   const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
   if (btn) btn.click();
+}
+function goToSettings() {
+  document.querySelector('.tab-btn[data-tab="settings"]').click();
 }
 
 // ------------------------------------------------------- GitHub helpers ----
@@ -470,6 +552,12 @@ async function fetchText(url) {
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
   return res.text();
+}
+
+async function fetchJsonAuth(url) {
+  const res = await fetch(url, { headers: ghHeaders(), cache: "no-store" });
+  if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
+  return res.json();
 }
 
 async function getFileSha(path) {
@@ -501,14 +589,10 @@ function countsByStatus(memory) {
   for (const e of memory) if (counts[e.status] !== undefined) counts[e.status]++;
   return counts;
 }
-function renderStatusBar(counts, total) {
-  if (total === 0) return "";
-  return `<div class="status-bar">${STATUS_ORDER.filter((s) => counts[s] > 0)
-    .map((s) => `<span class="status-${s}" style="width:${(counts[s] / total) * 100}%"></span>`)
+function renderStatusChips(counts) {
+  return `<div class="chip-row">${STATUS_ORDER.filter((s) => counts[s] > 0)
+    .map((s) => `<span class="chip chip-${s}">${counts[s]} ${s}</span>`)
     .join("")}</div>`;
-}
-function renderLegend(counts) {
-  return `<div class="legend">${STATUS_ORDER.map((s) => `<span><span class="dot status-${s}"></span>${s} (${counts[s]})</span>`).join("")}</div>`;
 }
 
 async function loadMemory(trackKey) {
@@ -528,21 +612,52 @@ async function listReports(trackKey) {
   }
 }
 
+// ==================================================== SETUP BANNER ====
+
+function updateSetupBanner() {
+  const hasGh = !!localStorage.getItem(GH_TOKEN_KEY);
+  const hasAnthropic = !!localStorage.getItem(ANTHROPIC_KEY_KEY);
+  const banner = $("setup-banner");
+
+  if (!hasGh) {
+    banner.style.display = "block";
+    banner.className = "setup-banner";
+    banner.innerHTML = `
+      <h2>👋 Quick setup before you start</h2>
+      <p class="section-desc">One required step, one optional:</p>
+      <ul class="setup-list">
+        <li>⬜ <strong>Connect GitHub</strong> — required, lets the dashboard run checks and save results for you</li>
+        <li>${hasAnthropic ? "✅" : "⬜"} <strong>Connect Claude</strong> (optional) — turns on the chat feature under History</li>
+      </ul>
+      <button class="secondary" id="setup-goto-settings">Go to Settings</button>
+    `;
+  } else if (!hasAnthropic) {
+    banner.style.display = "block";
+    banner.className = "setup-banner subtle";
+    banner.innerHTML = `<p style="margin:0">💬 Want to chat with Claude about your reports? <button class="linklike" id="setup-goto-settings">Connect a Claude key</button> in Settings (optional).</p>`;
+  } else {
+    banner.style.display = "none";
+    return;
+  }
+  $("setup-goto-settings").addEventListener("click", goToSettings);
+}
+
 // ============================================================== HOME =====
 
-async function renderStatusSummary(trackKey, label) {
+async function renderStatusSummary(trackKey, label, icon, blurb) {
   const el = $(`status-${trackKey}`);
   const [memory, reports] = await Promise.all([loadMemory(trackKey), listReports(trackKey)]);
   const counts = countsByStatus(memory);
   const total = memory.length;
-  const lastReport = reports[0] ? reports[0].name.replace(".md", "") : "&mdash;";
+  const lastReport = reports[0] ? formatDate(reports[0].name.replace(".md", "")) : "—";
   el.innerHTML = `
-    <h2>${label}</h2>
+    <h2>${icon} ${label}</h2>
+    <p class="section-desc">${blurb}</p>
     <div class="stat-row">
-      <div class="stat"><div class="n">${total}</div><div class="l">tracked</div></div>
-      <div class="stat"><div class="n">${lastReport}</div><div class="l">last report</div></div>
+      <div class="stat"><div class="n">${total}</div><div class="l">being tracked</div></div>
+      <div class="stat"><div class="n">${lastReport}</div><div class="l">last checked</div></div>
     </div>
-    ${total > 0 ? renderStatusBar(counts, total) + renderLegend(counts) : `<p class="empty">Nothing tracked yet.</p>`}
+    ${total > 0 ? renderStatusChips(counts) : `<p class="empty">Nothing tracked yet — run a check to get started.</p>`}
   `;
   return memory;
 }
@@ -550,7 +665,7 @@ async function renderStatusSummary(trackKey, label) {
 function renderTopicChecklist(trackKey, memory) {
   const el = $(`${trackKey}-topic-list`);
   if (!memory.length) {
-    el.innerHTML = `<p class="empty">No tracked topics yet — this run will only surface new findings.</p>`;
+    el.innerHTML = `<p class="empty">Nothing tracked yet — this run will only surface new findings.</p>`;
     return;
   }
   el.innerHTML = memory
@@ -575,13 +690,13 @@ async function dispatchRun() {
 
   if (!runFrontier && !runTrends) {
     runMsg.className = "msg err";
-    runMsg.textContent = "Select at least one track to run.";
+    runMsg.textContent = "Pick at least one tracker to run.";
     return;
   }
   const token = localStorage.getItem(GH_TOKEN_KEY);
   if (!token) {
     runMsg.className = "msg err";
-    runMsg.textContent = "Add a GitHub token in Settings first.";
+    runMsg.textContent = "Connect GitHub in Settings first — it only takes a minute.";
     return;
   }
 
@@ -596,8 +711,9 @@ async function dispatchRun() {
 
   const runBtn = $("run-btn");
   runBtn.disabled = true;
+  $("run-progress").innerHTML = "";
   runMsg.className = "msg warn";
-  runMsg.textContent = "Finding current run state...";
+  runMsg.textContent = "Getting ready...";
 
   try {
     const before = await fetchJsonAuth(
@@ -605,7 +721,7 @@ async function dispatchRun() {
     ).catch(() => ({ workflow_runs: [] }));
     const previousTopId = before.workflow_runs?.[0]?.id ?? null;
 
-    runMsg.textContent = "Dispatching...";
+    runMsg.textContent = "Starting...";
     const dispatchRes = await fetch(
       `${API_BASE}/actions/workflows/${WORKFLOW_FILE}/dispatches`,
       {
@@ -616,10 +732,10 @@ async function dispatchRun() {
     );
     if (!dispatchRes.ok) {
       const body = await dispatchRes.text();
-      throw new Error(`HTTP ${dispatchRes.status}: ${body.slice(0, 300)}`);
+      throw new Error(`GitHub said HTTP ${dispatchRes.status}: ${body.slice(0, 300)}`);
     }
 
-    runMsg.textContent = "Waiting for the run to appear...";
+    runMsg.textContent = "Starting up...";
     let runId = null;
     for (let i = 0; i < 20 && !runId; i++) {
       await new Promise((r) => setTimeout(r, 2000));
@@ -632,25 +748,41 @@ async function dispatchRun() {
 
     if (!runId) {
       runMsg.className = "msg warn";
-      runMsg.innerHTML = `Dispatched, but couldn't locate the run automatically. Check the <a href="https://github.com/${OWNER}/${REPO}/actions" target="_blank" rel="noopener">Actions tab</a> directly.`;
+      runMsg.innerHTML = `Started, but this page couldn't find it automatically. Check the <a href="https://github.com/${OWNER}/${REPO}/actions" target="_blank" rel="noopener">Actions tab</a> directly.`;
       return;
     }
 
     runMsg.className = "msg ok";
-    runMsg.textContent = "Run started.";
+    runMsg.textContent = "Running — here's what's happening:";
     pollRun(runId);
   } catch (err) {
     runMsg.className = "msg err";
-    runMsg.textContent = `Failed: ${err.message}`;
+    runMsg.textContent = `Something went wrong: ${err.message}`;
   } finally {
     runBtn.disabled = false;
   }
 }
 
-const STEP_ICON = {
-  queued: "step-queued",
-  in_progress: "step-in_progress",
+const STEP_LABELS = {
+  "Checkout": "Getting ready",
+  "Set up Python": "Getting ready",
+  "Install dependencies": "Installing tools",
+  "Run agent": "Researching",
+  "Commit updated memory, reports, and usage log": "Saving results",
 };
+function stepLabel(name) {
+  return STEP_LABELS[name] || name;
+}
+function stepStatusWord(s) {
+  if (s.status === "completed") return s.conclusion === "success" ? "Done" : "Failed";
+  if (s.status === "in_progress") return "Working…";
+  return "Waiting";
+}
+function stepIconClass(s) {
+  if (s.status === "completed") return `step-completed-${s.conclusion === "success" ? "success" : "failure"}`;
+  if (s.status === "in_progress") return "step-in_progress";
+  return "step-queued";
+}
 
 async function pollRun(runId) {
   const progressEl = $("run-progress");
@@ -669,42 +801,35 @@ async function pollRun(runId) {
       continue;
     }
 
-    const steps = (jobs.jobs?.[0]?.steps || []);
+    const steps = jobs.jobs?.[0]?.steps || [];
     progressEl.innerHTML = `
       <ul class="steps">
         ${steps
-          .map((s) => {
-            const cls =
-              s.status === "completed"
-                ? `step-completed-${s.conclusion === "success" ? "success" : "failure"}`
-                : STEP_ICON[s.status] || "step-queued";
-            return `<li><span class="step-icon ${cls}"></span>${escapeHtml(s.name)} <span style="color:var(--muted)">(${s.status}${s.conclusion ? ", " + s.conclusion : ""})</span></li>`;
-          })
+          .map(
+            (s) =>
+              `<li><span class="step-icon ${stepIconClass(s)}"></span>${escapeHtml(stepLabel(s.name))} <span style="color:var(--muted)">— ${stepStatusWord(s)}</span></li>`
+          )
           .join("")}
       </ul>
-      <p class="hint" style="margin-top:8px">
-        <a href="${runUrl}" target="_blank" rel="noopener">Full log on GitHub</a>
+      <p class="hint" style="margin-top:10px">
+        <a href="${runUrl}" target="_blank" rel="noopener">See the full technical log on GitHub</a>
       </p>
     `;
 
     if (run.status === "completed") {
       const ok = run.conclusion === "success";
-      progressEl.innerHTML += `<p class="msg ${ok ? "ok" : "err"}">Run ${run.conclusion}.</p>`;
+      progressEl.innerHTML += ok
+        ? `<p class="msg ok">✅ All done — check History and Usage &amp; Cost to see what it found.</p>`
+        : `<p class="msg err">❌ Something went wrong. See the full log above for details.</p>`;
       if (ok) {
-        renderStatusSummary("frontier", "Frontier").then((m) => renderTopicChecklist("frontier", m));
-        renderStatusSummary("trends", "Trends").then((m) => renderTopicChecklist("trends", m));
+        renderStatusSummary("frontier", "Frontier", "🧭", "Emerging tech and research with mainstream or commercial potential.").then((m) => renderTopicChecklist("frontier", m));
+        renderStatusSummary("trends", "Trends", "📈", "Early-stage consumer, cultural, and market signals.").then((m) => renderTopicChecklist("trends", m));
       }
       return;
     }
     await new Promise((r) => setTimeout(r, 4000));
   }
   progressEl.innerHTML += `<p class="msg warn">Still running — <a href="${runUrl}" target="_blank" rel="noopener">check the log</a> directly.</p>`;
-}
-
-async function fetchJsonAuth(url) {
-  const res = await fetch(url, { headers: ghHeaders(), cache: "no-store" });
-  if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
-  return res.json();
 }
 
 $("run-btn").addEventListener("click", dispatchRun);
@@ -765,7 +890,7 @@ async function openReport(trackKey, filename) {
   try {
     content = await fetchText(`${RAW_BASE}/${path}`);
   } catch (err) {
-    $("report-view").innerHTML = `<p class="msg err">Couldn't load ${escapeHtml(path)}: ${escapeHtml(err.message)}</p>`;
+    $("report-view").innerHTML = `<p class="msg err">Couldn't load this report: ${escapeHtml(err.message)}</p>`;
     return;
   }
 
@@ -776,21 +901,21 @@ async function openReport(trackKey, filename) {
 
   const hasKey = !!localStorage.getItem(ANTHROPIC_KEY_KEY);
   $("chat-key-hint").textContent = hasKey
-    ? `Chatting about ${path}.`
-    : "Add an Anthropic API key in Settings to enable chat.";
+    ? ""
+    : "Connect Claude in Settings to chat about this report.";
 }
 
 async function renderHistoryList(trackKey) {
   const el = $(`history-${trackKey}`);
   const reports = await listReports(trackKey);
   if (!reports.length) {
-    el.innerHTML = `<li class="empty">No reports yet.</li>`;
+    el.innerHTML = `<li class="empty">No checks run yet.</li>`;
     return;
   }
   el.innerHTML = reports
     .map(
       (f) =>
-        `<li><button class="link" data-track="${trackKey}" data-file="${f.name}">${f.name.replace(".md", "")}</button></li>`
+        `<li><button class="link" data-track="${trackKey}" data-file="${f.name}">${formatDate(f.name.replace(".md", ""))}</button></li>`
     )
     .join("");
   el.querySelectorAll("button.link").forEach((btn) => {
@@ -800,7 +925,7 @@ async function renderHistoryList(trackKey) {
 
 async function callClaude(model, systemPrompt, messages) {
   const key = localStorage.getItem(ANTHROPIC_KEY_KEY);
-  if (!key) throw new Error("No Anthropic key saved in Settings.");
+  if (!key) throw new Error("Connect a Claude key in Settings first.");
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -813,7 +938,7 @@ async function callClaude(model, systemPrompt, messages) {
   });
   if (!res.ok) {
     const body = await res.text();
-    throw new Error(`Claude API error ${res.status}: ${body.slice(0, 300)}`);
+    throw new Error(`Claude said HTTP ${res.status}: ${body.slice(0, 300)}`);
   }
   const data = await res.json();
   return data.content.filter((b) => b.type === "text").map((b) => b.text).join("");
@@ -830,7 +955,7 @@ function appendBubble(role, text) {
     div.innerHTML = `${escapeHtml(before)}<pre>${escapeHtml(codeMatch[1])}</pre>${escapeHtml(after)}`;
     const saveBtn = document.createElement("button");
     saveBtn.className = "small secondary";
-    saveBtn.textContent = "Save this as the new report version";
+    saveBtn.textContent = "Save this as the new version";
     saveBtn.style.marginTop = "6px";
     saveBtn.addEventListener("click", () => saveRevision(codeMatch[1]));
     div.appendChild(document.createElement("br"));
@@ -853,7 +978,7 @@ async function saveRevision(newContent) {
     $("chat-msg").textContent = "Saved.";
   } catch (err) {
     $("chat-msg").className = "msg err";
-    $("chat-msg").textContent = `Save failed: ${err.message}`;
+    $("chat-msg").textContent = `Couldn't save: ${err.message}`;
   }
 }
 
@@ -923,14 +1048,14 @@ async function renderUsageTab() {
 
   const tbody = document.querySelector("#usage-table tbody");
   if (!lines.length) {
-    tbody.innerHTML = `<tr><td colspan="7" class="empty">No runs logged yet.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="empty">No checks run yet.</td></tr>`;
     return;
   }
   tbody.innerHTML = [...lines]
     .reverse()
     .map(
       (e) => `<tr>
-        <td>${escapeHtml(e.date)}</td>
+        <td>${escapeHtml(formatDate(e.date))}</td>
         <td>${escapeHtml(e.track)}</td>
         <td>${e.input_tokens}</td>
         <td>${e.cache_read_input_tokens || 0}</td>
@@ -947,14 +1072,16 @@ async function renderUsageTab() {
 function updateTokenStatus() {
   const has = !!localStorage.getItem(GH_TOKEN_KEY);
   $("token-status").innerHTML = has
-    ? `<span style="color:var(--ok)">&#9679; Token saved in this browser.</span>`
-    : `<span style="color:var(--muted)">&#9675; No token saved &mdash; running, saving, and viewing report lists will fail until you add one.</span>`;
+    ? `<span style="color:var(--ok)">✓ Connected</span>`
+    : `<span style="color:var(--muted)">Not connected yet</span>`;
+  updateSetupBanner();
 }
 function updateAnthropicKeyStatus() {
   const has = !!localStorage.getItem(ANTHROPIC_KEY_KEY);
   $("anthropic-key-status").innerHTML = has
-    ? `<span style="color:var(--ok)">&#9679; Key saved in this browser.</span>`
-    : `<span style="color:var(--muted)">&#9675; No key saved &mdash; chat in History won't work until you add one.</span>`;
+    ? `<span style="color:var(--ok)">✓ Connected</span>`
+    : `<span style="color:var(--muted)">Not connected yet</span>`;
+  updateSetupBanner();
 }
 
 $("token-save").addEventListener("click", () => {
@@ -1002,7 +1129,7 @@ $("settings-form").addEventListener("submit", async (e) => {
   const msgEl = $("save-settings-msg");
   if (!localStorage.getItem(GH_TOKEN_KEY)) {
     msgEl.className = "msg err";
-    msgEl.textContent = "Add a GitHub token above first.";
+    msgEl.textContent = "Connect GitHub above first.";
     return;
   }
   const btn = $("save-settings-btn");
@@ -1032,7 +1159,7 @@ $("settings-form").addEventListener("submit", async (e) => {
     }
   } catch (err) {
     msgEl.className = "msg err";
-    msgEl.textContent = `Save failed: ${err.message}`;
+    msgEl.textContent = `Couldn't save: ${err.message}`;
   } finally {
     btn.disabled = false;
   }
@@ -1053,7 +1180,7 @@ function wireSavePrompt(track) {
     const msgEl = $(`${track}-prompt-msg`);
     if (!localStorage.getItem(GH_TOKEN_KEY)) {
       msgEl.className = "msg err";
-      msgEl.textContent = "Add a GitHub token above first.";
+      msgEl.textContent = "Connect GitHub above first.";
       return;
     }
     msgEl.className = "msg warn";
@@ -1072,7 +1199,7 @@ function wireSavePrompt(track) {
       msgEl.textContent = "Saved.";
     } catch (err) {
       msgEl.className = "msg err";
-      msgEl.textContent = `Save failed: ${err.message}`;
+      msgEl.textContent = `Couldn't save: ${err.message}`;
     }
   });
 }
@@ -1088,8 +1215,8 @@ async function init() {
   window.addEventListener("hashchange", openTabFromHash);
 
   const [frontierMemory, trendsMemory] = await Promise.all([
-    renderStatusSummary("frontier", "Frontier"),
-    renderStatusSummary("trends", "Trends"),
+    renderStatusSummary("frontier", "Frontier", "🧭", "Emerging tech and research with mainstream or commercial potential."),
+    renderStatusSummary("trends", "Trends", "📈", "Early-stage consumer, cultural, and market signals."),
   ]);
   renderTopicChecklist("frontier", frontierMemory);
   renderTopicChecklist("trends", trendsMemory);
