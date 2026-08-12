@@ -1,0 +1,10 @@
+{
+  "frontier": {
+    "max_new": 5,
+    "max_updates": 8
+  },
+  "trends": {
+    "max_new": 5,
+    "max_updates": 8
+  }
+}

@@ -1,1 +1,62 @@
-[]
+[
+  {
+    "id": "deepmind-weathernext-cyclone",
+    "first_seen": "2026-08-08",
+    "topic": "AI cyclone forecasting model open-sourced by Google DeepMind",
+    "status": "maturing",
+    "last_update": "2026-08-08",
+    "summary": "DeepMind's WeatherNext model gives forecasters roughly an extra day of warning on dangerous cyclone development, and the lab announced it is now open-sourcing the model.",
+    "why_it_matters": "Tropical cyclones are tied to over 700,000 deaths and $1.4T in losses over 50 years; a lab-grade, open-sourced forecasting model could be adopted directly by national weather agencies, insurers, and disaster-response systems, turning a research model into critical infrastructure.",
+    "update_log": [
+      "2026-08-08: DeepMind published official blog post (Aug 6, 2026) announcing the cyclone-forecasting breakthrough and open-sourcing of WeatherNext."
+    ]
+  },
+  {
+    "id": "openai-ai-generated-math-proofs",
+    "first_seen": "2026-08-08",
+    "topic": "OpenAI models producing citable, durable math/theoretical-CS results",
+    "status": "developing",
+    "last_update": "2026-08-08",
+    "summary": "OpenAI published 'Ten advances in mathematics and theoretical computer science' on Aug 1, 2026 covering geometry, cryptography and complexity; an earlier May proof from the same effort already spawned a human-authored derivative paper within seven days and a named technique within six weeks.",
+    "why_it_matters": "Independent researchers building follow-up work on AI-generated proofs (rather than just verifying them) would mark a shift from 'AI as a research assistant' to 'AI as a primary contributor' in hard sciences, a milestone with major implications for R&D productivity and IP.",
+    "update_log": [
+      "2026-08-08: OpenAI's Aug 1 publication of ten new math/CS results is being tracked against its earlier May proof's real-world citation trail as a test of durability."
+    ]
+  },
+  {
+    "id": "ai-rare-earth-free-magnets",
+    "first_seen": "2026-08-08",
+    "topic": "AI-built database identifies rare-earth-free magnetic materials",
+    "status": "developing",
+    "last_update": "2026-08-08",
+    "summary": "University of New Hampshire researchers used AI to screen a new database of more than 67,000 magnetic materials, uncovering 25 candidate compounds that remain magnetic at high temperature without relying on rare-earth elements, published in Nature Communications.",
+    "why_it_matters": "Rare-earth magnets are a chokepoint in EV motor and wind-turbine supply chains dominated by China; a validated, AI-discovered substitute path could reduce that dependency and reshape sourcing strategy for automakers and energy companies.",
+    "update_log": [
+      "2026-08-08: Nature Communications paper and Feb 2026 ScienceDaily coverage of the 'Northeast Materials Database' identified as a credible early signal."
+    ]
+  },
+  {
+    "id": "ai-superconductivity-causal-extraction",
+    "first_seen": "2026-08-08",
+    "topic": "AI method extracts causal superconductivity mechanisms from spectroscopy data",
+    "status": "emerging",
+    "last_update": "2026-08-08",
+    "summary": "Tohoku University and Fujitsu used an AI causal-analysis technique on ARPES spectroscopy data to identify the electron-pairing mechanism behind superconductivity in the compound CsV3Sb5, published in Scientific Reports.",
+    "why_it_matters": "A generalizable AI method for reading causal mechanisms out of raw spectroscopy data (rather than one-off material screening) could speed up discovery across many superconductor families, with downstream relevance to energy, electronics, and quantum computing hardware.",
+    "update_log": [
+      "2026-08-08: Phys.org coverage (Dec 2025) of the Tohoku/Fujitsu Scientific Reports paper identified as first credible signal."
+    ]
+  },
+  {
+    "id": "alphaevolve-doe-national-labs",
+    "first_seen": "2026-08-08",
+    "topic": "Google DeepMind's AlphaEvolve and AI co-scientist deployed to US national labs",
+    "status": "developing",
+    "last_update": "2026-08-08",
+    "summary": "Under the US Department of Energy's Genesis Mission, Google DeepMind is expanding access to AlphaEvolve, a Gemini-powered coding agent for designing algorithms, and its 'AI co-scientist' tool to national laboratories including Brookhaven; the co-scientist has already proposed drug-repurposing candidates for liver fibrosis that were validated in the lab.",
+    "why_it_matters": "Institutional, government-funded deployment of an AI research agent across national labs -- backed by an already-validated real-world hit in drug discovery -- signals a jump from research demo to sanctioned scientific infrastructure, with a 24-organization partnership structure behind it.",
+    "update_log": [
+      "2026-08-08: BNL Newsroom repost of DeepMind's Genesis Mission announcement identified as the corroborating signal for national-lab-scale rollout."
+    ]
+  }
+]

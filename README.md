@@ -13,7 +13,9 @@ independent things and emails you a report on each:
 Each run researches the week via Claude + web search, diffs findings against
 a persistent memory file per track (so it never re-reports the same thing as
 new), updates that memory, writes a dated Markdown report into `reports/`,
-and — if there's anything to report — emails you a summary.
+and — if there's anything to report — emails you a summary. A live status
+[dashboard](#dashboard) is also available for checking on things and
+tweaking a few settings without touching code.
 
 ## One-time setup
 
@@ -118,8 +120,9 @@ or loosen these anchor definitions rather than adding a numeric threshold —
 they're deliberately judgment-based so the model can weigh real-world
 evidence instead of counting weeks.
 
-To change the per-week cap, edit `MAX_NEW` / `MAX_UPDATES` near the top of
-`agent.py`.
+The per-week item caps live in `config.json` at the repo root (not in
+`agent.py`) so they can be changed without touching code — edit the file
+directly, or use the [dashboard](#dashboard) below.
 
 ## Schedule and the DST caveat
 
@@ -139,3 +142,62 @@ hour, twice a year, and cosmetic.
 
 `workflow_dispatch` (the manual trigger) ignores the cron schedule entirely,
 so you can always run it on demand regardless of what time it currently is.
+
+You can also change the schedule (and the item caps above) from the
+[dashboard](#dashboard) instead of editing the cron line by hand.
+
+## Dashboard
+
+A small static status page lives at `docs/index.html` and is meant to be
+served via GitHub Pages at **`https://rharoo20.github.io/research-agent/`**.
+It's read-heavy and write-light: on load it pulls live data straight from
+this public repo (no login needed to *view* it) and shows, per track, how
+many things are tracked, their `emerging → mainstream` breakdown, and links
+to every past report. A **Settings** section lets you edit the per-track item
+caps and the delivery day/time, which commit straight back to this repo when
+saved.
+
+### One-time setup
+
+1. **Enable Pages:** repo → **Settings → Pages** → under **Build and
+   deployment**, set **Source** to **Deploy from a branch**, **Branch** to
+   `main` / `/docs`, then **Save**. GitHub will publish the URL above within
+   a minute or two of the next push.
+2. **Create a token for saving changes** (skip this if you only want to
+   *view* the dashboard): go to
+   [github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new)
+   and create a **fine-grained personal access token** scoped to **only this
+   repository**, with **Repository permissions → Contents: Read and write**
+   and nothing else. Open the dashboard, paste the token into the **GitHub
+   access** box at the bottom, and click **Save token**.
+
+### What the token can and can't do, and where it lives
+
+The token is stored **only in your browser's `localStorage`** — it's never
+sent to me, never committed anywhere, and never appears in the page's
+source. It's used exclusively for direct browser-to-`api.github.com` calls
+when you click **Save changes**. Scoping it to *this repo only* with
+*Contents* permission means, worst case if it ever leaked, someone could
+edit files in this one repo — not your other repos, not your account
+settings, not GitHub Secrets.
+
+**`RECIPIENT_EMAIL` is deliberately not on the dashboard.** The dashboard can
+only write to plain repo files (via the Contents API), not to encrypted
+GitHub Secrets — and this repo is public, so anything the dashboard could
+read/write in a plain file would be publicly visible to anyone with the
+Pages URL. An email address is exactly the kind of thing that shouldn't leak
+that way, so it stays a Secret, changed the normal way (**Settings → Secrets
+and variables → Actions**), not through the dashboard.
+
+### Item caps and schedule live in real files
+
+- Caps: `config.json` at the repo root (`{"frontier": {"max_new": 5,
+  "max_updates": 8}, "trends": {...}}`).
+- Schedule: the `cron:` line in `.github/workflows/weekly-report.yml`. The
+  dashboard's day/time picker assumes Central Daylight Time (UTC−5) the same
+  way the plain-cron instructions above do, including the same DST drift
+  caveat.
+
+Both are ordinary files — you can always hand-edit and commit them yourself
+instead of using the dashboard; nothing about the dashboard is required for
+the agent to run.

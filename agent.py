@@ -23,8 +23,8 @@ import resend
 RESEND_FROM_ADDRESS = "onboarding@resend.dev"
 
 MODEL = "claude-sonnet-5"
-MAX_NEW = 5
-MAX_UPDATES = 8
+CONFIG_FILE = "config.json"
+DEFAULT_TRACK_CONFIG = {"max_new": 5, "max_updates": 8}
 
 STATUS_ANCHORS = """STATUS DEFINITIONS (use these anchors consistently; do not invent your own scale):
 - emerging: first credible signal spotted; a single source or a small cluster; no measurable momentum yet.
@@ -81,7 +81,7 @@ competitor move, going more mainstream, a status change): add it as an updated_e
 with a one-line update_note describing what changed. Do not re-report it as new.
 - If it IS in this list with nothing new to report: leave it out entirely. Do not force an update.
 
-Cap yourself at {MAX_NEW} new_entries and {MAX_UPDATES} updated_entries. If more genuinely \
+Cap yourself at <<MAX_NEW>> new_entries and <<MAX_UPDATES>> updated_entries. If more genuinely \
 qualify, keep only the strongest signals.
 
 CURRENTLY TRACKED (JSON):
@@ -113,7 +113,7 @@ competitor move, going more mainstream, a status change): add it as an updated_e
 with a one-line update_note describing what changed. Do not re-report it as new.
 - If it IS in this list with nothing new to report: leave it out entirely. Do not force an update.
 
-Cap yourself at {MAX_NEW} new_entries and {MAX_UPDATES} updated_entries. If more genuinely \
+Cap yourself at <<MAX_NEW>> new_entries and <<MAX_UPDATES>> updated_entries. If more genuinely \
 qualify, keep only the strongest signals.
 
 CURRENTLY TRACKED (JSON):
@@ -137,6 +137,20 @@ TRACKS = {
         "prompt_template": TRENDS_PROMPT,
     },
 }
+
+
+def load_config() -> dict:
+    """Non-secret, dashboard-editable tunables (per-track item caps). Falls back to
+    defaults for anything missing so a malformed/partial config.json can't crash a run."""
+    p = Path(CONFIG_FILE)
+    data = {}
+    if p.exists():
+        with p.open() as f:
+            data = json.load(f)
+    return {
+        track_key: {**DEFAULT_TRACK_CONFIG, **data.get(track_key, {})}
+        for track_key in TRACKS
+    }
 
 
 def load_memory(path: str) -> list:
@@ -171,9 +185,12 @@ def memory_for_prompt(memory: list) -> str:
     return json.dumps(compact, indent=2)
 
 
-def build_prompt(template: str, memory: list, today: str) -> str:
-    return template.replace("<<MEMORY_JSON>>", memory_for_prompt(memory)).replace(
-        "<<TODAY>>", today
+def build_prompt(template: str, memory: list, today: str, max_new: int, max_updates: int) -> str:
+    return (
+        template.replace("<<MEMORY_JSON>>", memory_for_prompt(memory))
+        .replace("<<TODAY>>", today)
+        .replace("<<MAX_NEW>>", str(max_new))
+        .replace("<<MAX_UPDATES>>", str(max_updates))
     )
 
 
@@ -219,11 +236,11 @@ def run_research(client: anthropic.Anthropic, prompt: str) -> dict:
     return extract_json(final_text)
 
 
-def merge_memory(memory: list, parsed: dict, today: str):
+def merge_memory(memory: list, parsed: dict, today: str, max_new: int, max_updates: int):
     by_id = {entry["id"]: entry for entry in memory}
 
     report_new = []
-    for entry in parsed.get("new_entries", [])[:MAX_NEW]:
+    for entry in parsed.get("new_entries", [])[:max_new]:
         entry.setdefault("first_seen", today)
         entry.setdefault("last_update", today)
         entry.setdefault("update_log", [f"{today}: {entry.get('summary', '')}"])
@@ -234,7 +251,7 @@ def merge_memory(memory: list, parsed: dict, today: str):
         report_new.append(entry)
 
     report_updates = []
-    for update in parsed.get("updated_entries", [])[:MAX_UPDATES]:
+    for update in parsed.get("updated_entries", [])[:max_updates]:
         target = by_id.get(update["id"])
         if target is None:
             # model referenced an id that doesn't exist — skip rather than corrupt memory
@@ -346,15 +363,26 @@ def send_email(subject: str, html_body: str, plain_body: str) -> None:
     )
 
 
-def run_track(client: anthropic.Anthropic, track_key: str, config: dict, today: str) -> None:
+def run_track(
+    client: anthropic.Anthropic,
+    track_key: str,
+    config: dict,
+    tunables: dict,
+    today: str,
+) -> None:
     print(f"[{track_key}] loading memory from {config['memory_file']}")
     memory = load_memory(config["memory_file"])
 
+    max_new = tunables["max_new"]
+    max_updates = tunables["max_updates"]
+
     print(f"[{track_key}] researching via Claude + web_search...")
-    prompt = build_prompt(config["prompt_template"], memory, today)
+    prompt = build_prompt(config["prompt_template"], memory, today, max_new, max_updates)
     parsed = run_research(client, prompt)
 
-    merged_memory, report_new, report_updates = merge_memory(memory, parsed, today)
+    merged_memory, report_new, report_updates = merge_memory(
+        memory, parsed, today, max_new, max_updates
+    )
     save_memory(config["memory_file"], merged_memory)
     print(
         f"[{track_key}] {len(report_new)} new, {len(report_updates)} updated, "
@@ -384,9 +412,10 @@ def main() -> None:
 
     client = anthropic.Anthropic()
     today = date.today().isoformat()
+    tunables = load_config()
 
     for track_key, config in TRACKS.items():
-        run_track(client, track_key, config, today)
+        run_track(client, track_key, config, tunables[track_key], today)
 
 
 if __name__ == "__main__":
